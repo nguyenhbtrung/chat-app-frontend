@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
-import { login } from '../services/auth';
+import { login } from '../../services/auth';
 
-const Login = ({ setToken, setUsername }) => {
+
+const Login = () => {
     const [username, setInputUsername] = useState('');
     const [password, setPassword] = useState('');
 
     const handleLogin = async () => {
         try {
             const data = await login(username, password);
-            setToken(data.token);
-            setUsername(data.username);
             localStorage.setItem('token', data.token);
             localStorage.setItem('username', data.username);
         } catch (err) {
