@@ -1,25 +1,33 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import Login from './components/Login';
+import OnlineUsers from './components/OnlineUsers';
+import FileTransfer from './components/FileTransfer';
 
-function App() {
+const App = () => {
+  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [username, setUsername] = useState(localStorage.getItem('username'));
+  const [peerConnection, setPeerConnection] = useState(null);
+
+  const connectToPeer = (userId) => {
+    const pc = new RTCPeerConnection();
+    setPeerConnection(pc);
+
+    // Thiết lập các sự kiện WebRTC tại đây
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {!token ? (
+        <Login setToken={setToken} setUsername={setUsername} />
+      ) : (
+        <div>
+          <h1>Welcome, {username}</h1>
+          <OnlineUsers token={token} connectToPeer={connectToPeer} />
+          {peerConnection && <FileTransfer peerConnection={peerConnection} />}
+        </div>
+      )}
     </div>
   );
-}
+};
 
 export default App;
