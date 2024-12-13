@@ -1,19 +1,16 @@
 import React, { useEffect, useState } from "react";
+import { Box, Typography, List, ListItem, Button, Divider } from "@mui/material";
 
 const OnlineUsers = ({ token, connectToPeer, socket }) => {
     const [users, setUsers] = useState([]);
 
     useEffect(() => {
-
         if (!socket) {
             console.log("Socket is not defined yet.");
             return;
         }
-        console.log("Socket is defined:", socket);
-        const handleConnect = () => {
-            console.log("Connected to socket server:", socket.id);
 
-            // Đăng ký username (thay username bằng giá trị thực tế)
+        const handleConnect = () => {
             const username = localStorage.getItem("username");
             socket.emit("register", username);
         };
@@ -22,9 +19,7 @@ const OnlineUsers = ({ token, connectToPeer, socket }) => {
             setUsers(activeUsers.filter(([id]) => id !== socket.id)); // Loại bỏ chính mình
         };
 
-        // Khi component mount
         socket.on("connect", handleConnect);
-        // Nhận danh sách người dùng online
         socket.on("active-users", handleActiveUsers);
 
         return () => {
@@ -34,17 +29,27 @@ const OnlineUsers = ({ token, connectToPeer, socket }) => {
     }, [socket]);
 
     return (
-        <div>
-            <h2>Online Users</h2>
-            <ul>
+        <Box sx={{ marginTop: 2, padding: 2, border: "1px solid #ddd", borderRadius: 2 }}>
+            <Typography variant="h5" gutterBottom>
+                Online Users
+            </Typography>
+            <List>
                 {users.map(([id, user]) => (
-                    <li key={id}>
-                        {user.username} (Peer ID: {id}){" "}
-                        <button onClick={() => connectToPeer(id)}>Connect</button>
-                    </li>
+                    <React.Fragment key={id}>
+                        <ListItem
+                            secondaryAction={
+                                <Button variant="contained" color="primary" onClick={() => connectToPeer(id)}>
+                                    Connect
+                                </Button>
+                            }
+                        >
+                            <Typography>{user.username} (Peer ID: {id})</Typography>
+                        </ListItem>
+                        <Divider />
+                    </React.Fragment>
                 ))}
-            </ul>
-        </div>
+            </List>
+        </Box>
     );
 };
 

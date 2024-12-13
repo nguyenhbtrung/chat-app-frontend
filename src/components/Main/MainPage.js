@@ -1,27 +1,25 @@
 import React, { useState, useEffect } from "react";
-import Login from "../Auth/Login";
+import { io } from "socket.io-client";
+import { Box, Typography, Container } from "@mui/material";
 import useWebRTC from "../../hooks/useWebRTC";
 import OnlineUsers from "./OnlineUsers";
 import FileTransfer from "./FileTransfer";
-import { io } from "socket.io-client";
 
-const MainPage = (props) => {
-    const [token, setToken] = useState(localStorage.getItem("token"));
-    const [username, setUsername] = useState(localStorage.getItem("username"));
+const MainPage = () => {
+    const [token] = useState(localStorage.getItem("token"));
+    const [username] = useState(localStorage.getItem("username"));
     const [socket, setSocket] = useState(null);
-    const [peerId, setPeerId] = useState(""); // Trạng thái lưu Peer ID
+    const [peerId, setPeerId] = useState("");
 
     useEffect(() => {
         const newSocket = io("http://localhost:8080");
         setSocket(newSocket);
 
         newSocket.on("connect", () => {
-            setPeerId(newSocket.id); // Cập nhật Peer ID sau khi kết nối
-            console.log("Connected with Peer ID:", newSocket.id);
+            setPeerId(newSocket.id);
         });
 
         return () => {
-            console.log("Disconnecting socket...");
             newSocket.disconnect();
         };
     }, []);
@@ -36,10 +34,14 @@ const MainPage = (props) => {
     };
 
     return (
-        <div>
-            <h1>Welcome, {username}</h1>
-            {socket && peerId && ( // Hiển thị Peer ID nếu đã kết nối
-                <p>Your Peer ID: <strong>{peerId}</strong></p>
+        <Container>
+            <Typography variant="h4" gutterBottom>
+                Welcome, {username}
+            </Typography>
+            {socket && peerId && (
+                <Typography variant="subtitle1">
+                    Your Peer ID: <strong>{peerId}</strong>
+                </Typography>
             )}
             {socket && (
                 <OnlineUsers
@@ -49,8 +51,8 @@ const MainPage = (props) => {
                 />
             )}
             <FileTransfer sendFile={sendFile} />
-            <div>
-                <h3>Received Files</h3>
+            <Box sx={{ marginTop: 4 }}>
+                <Typography variant="h5">Received Files</Typography>
                 <ul>
                     {receivedFiles.map((file, index) => (
                         <li key={index}>
@@ -60,8 +62,8 @@ const MainPage = (props) => {
                         </li>
                     ))}
                 </ul>
-            </div>
-        </div>
+            </Box>
+        </Container>
     );
 };
 

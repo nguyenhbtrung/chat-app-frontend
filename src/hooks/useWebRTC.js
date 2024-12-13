@@ -57,6 +57,8 @@ const useWebRTC = (socket) => {
     const handleOffer = async (offer, from) => {
         // if (!peerRef.current) {
         createPeerConnection();
+        const dataChannel = peerRef.current.createDataChannel("fileTransfer");
+        dataChannelRef.current = dataChannel;
         // }
 
         peerRef.current.remotePeerId = from;
