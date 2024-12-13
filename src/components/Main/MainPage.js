@@ -26,15 +26,9 @@ const MainPage = () => {
 
         newSocket.on("request-connection", ({ from }) => {
             setConnectionRequest(from);
-            console.log("socket2", socket);
-            console.log("socketRef2", socketRef.current);
-            CheckSocket(2);
         });
 
         newSocket.on("connection-accepted", ({ from }) => {
-            console.log("socket3", socket);
-            console.log("socketRef3", socketRef.current);
-            CheckSocket(3);
             handleConnectionAccepted(from);
         });
 
@@ -59,21 +53,9 @@ const MainPage = () => {
 
     const connectToPeer = (peerId) => {
         socket.emit("request-connection", peerId);
-        console.log("socket1", socket);
-        console.log("socketRef1", socketRef.current);
-        CheckSocket(1);
-
-        // console.log(socket);
-        // createPeerConnection((data) => {
-        //     console.log("Received file data:", data);
-        // });
-        // sendOffer(peerId);
     };
 
     const handleConnectionAccepted = (peerId) => {
-        console.log("socket4", socket);
-        console.log("socketRef4", socketRef.current);
-        CheckSocket(4);
         createPeerConnection((data) => {
             console.log("Received file data:", data);
         });

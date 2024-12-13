@@ -14,6 +14,11 @@ const useWebRTC = (socket) => {
     };
 
     const createPeerConnection = (onDataReceived) => {
+        if (peerRef.current) {
+            peerRef.current.close();
+            socket.current.emit("peer-disconnected", { remote: peerRef.current.remotePeerId })
+        }
+
         peerRef.current = new RTCPeerConnection();
 
         peerRef.current.ondatachannel = (event) => {
@@ -48,6 +53,19 @@ const useWebRTC = (socket) => {
                 });
             }
         };
+
+        peerRef.current.oniceconnectionstatechange = () => {
+            if (peerRef.current.iceConnectionState === "connected" || peerRef.current.iceConnectionState === "completed") {
+                console.log("Peer connection established successfully");
+                socket.current.emit("connection-succesful", { remote: peerRef.current.remotePeerId });
+            } else if (peerRef.current.iceConnectionState === "disconnected" || peerRef.current.iceConnectionState === "closed") {
+                console.log("Peer disconnected");
+                socket.current.emit("peer-disconnected", { remote: peerRef.current.remotePeerId })
+                if (peerRef.current) {
+                    peerRef.current.close();
+                }
+            }
+        };
     };
 
     const sendOffer = async (to) => {
@@ -58,6 +76,7 @@ const useWebRTC = (socket) => {
         dataChannelRef.current = dataChannel;
         // }
 
+        peerRef.current.remotePeerId = to;
         const offer = await peerRef.current.createOffer();
         await peerRef.current.setLocalDescription(offer);
 
@@ -65,7 +84,6 @@ const useWebRTC = (socket) => {
     };
 
     const handleOffer = async (offer, from) => {
-        console.log("Handle offer");
         // if (!peerRef.current) {
         createPeerConnection();
         const dataChannel = peerRef.current.createDataChannel("fileTransfer");
@@ -82,12 +100,10 @@ const useWebRTC = (socket) => {
     };
 
     const handleAnswer = async (answer) => {
-        console.log("Handle answer");
         await peerRef.current.setRemoteDescription(new RTCSessionDescription(answer));
     };
 
     const handleCandidate = (candidate) => {
-        console.log("Handle candidate");
         peerRef.current.addIceCandidate(new RTCIceCandidate(candidate));
     };
 

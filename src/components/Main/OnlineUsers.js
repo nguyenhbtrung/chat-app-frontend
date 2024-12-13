@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, List, ListItem, Button, Divider } from "@mui/material";
+import { Box, Typography, List, ListItem, Button, Divider, Alert } from "@mui/material";
 
 const OnlineUsers = ({ token, connectToPeer, socket }) => {
     const [users, setUsers] = useState([]);
+    const [connectionStatus, setConnectionStatus] = useState({});
 
     useEffect(() => {
         if (!socket) {
@@ -19,14 +20,38 @@ const OnlineUsers = ({ token, connectToPeer, socket }) => {
             setUsers(activeUsers.filter(([id]) => id !== socket.id)); // Loại bỏ chính mình
         };
 
+        const handleConnectionSuccessful = ({ remote }) => {
+            setConnectionStatus((prev) => ({
+                ...prev,
+                [remote]: "connected",
+            }));
+        };
+
+        const handlePeerDisconnected = ({ remote }) => {
+            setConnectionStatus((prev) => ({
+                ...prev,
+                [remote]: "disconnected",
+            }));
+        };
+
         socket.on("connect", handleConnect);
         socket.on("active-users", handleActiveUsers);
+        socket.on("connection-succesful", handleConnectionSuccessful);
+        socket.on("peer-disconnected", handlePeerDisconnected);
 
         return () => {
             socket.off("connect", handleConnect);
             socket.off("active-users", handleActiveUsers);
         };
     }, [socket]);
+
+    const handleConnectClick = (id) => {
+        connectToPeer(id);
+        setConnectionStatus((prev) => ({
+            ...prev,
+            [id]: "requesting",
+        }));
+    };
 
     return (
         <Box sx={{ marginTop: 2, padding: 2, border: "1px solid #ddd", borderRadius: 2 }}>
@@ -38,9 +63,26 @@ const OnlineUsers = ({ token, connectToPeer, socket }) => {
                     <React.Fragment key={id}>
                         <ListItem
                             secondaryAction={
-                                <Button variant="contained" color="primary" onClick={() => connectToPeer(id)}>
-                                    Connect
-                                </Button>
+                                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                                    {connectionStatus[id] === "requesting" && (
+                                        <Alert severity="info" sx={{ padding: "2px 8px" }}>
+                                            Sending Request...
+                                        </Alert>
+                                    )}
+                                    {connectionStatus[id] === "connected" && (
+                                        <Alert severity="success" sx={{ padding: "2px 8px" }}>
+                                            Connected
+                                        </Alert>
+                                    )}
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={() => handleConnectClick(id)}
+                                        disabled={connectionStatus[id] === "connected" || connectionStatus[id] === "requesting"} // Vô hiệu hóa nút nếu đã kết nối
+                                    >
+                                        Connect
+                                    </Button>
+                                </Box>
                             }
                         >
                             <Typography>{user.username} (Peer ID: {id})</Typography>
