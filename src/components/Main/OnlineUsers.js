@@ -39,7 +39,7 @@ const OnlineUsers = ({ token, connectToPeer, socket }) => {
             <ul>
                 {users.map(([id, user]) => (
                     <li key={id}>
-                        {user.username}{" "}
+                        {user.username} (Peer ID: {id}){" "}
                         <button onClick={() => connectToPeer(id)}>Connect</button>
                     </li>
                 ))}

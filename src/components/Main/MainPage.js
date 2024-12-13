@@ -9,10 +9,16 @@ const MainPage = (props) => {
     const [token, setToken] = useState(localStorage.getItem("token"));
     const [username, setUsername] = useState(localStorage.getItem("username"));
     const [socket, setSocket] = useState(null);
+    const [peerId, setPeerId] = useState(""); // Trạng thái lưu Peer ID
 
     useEffect(() => {
         const newSocket = io("http://localhost:8080");
         setSocket(newSocket);
+
+        newSocket.on("connect", () => {
+            setPeerId(newSocket.id); // Cập nhật Peer ID sau khi kết nối
+            console.log("Connected with Peer ID:", newSocket.id);
+        });
 
         return () => {
             console.log("Disconnecting socket...");
@@ -32,6 +38,9 @@ const MainPage = (props) => {
     return (
         <div>
             <h1>Welcome, {username}</h1>
+            {socket && peerId && ( // Hiển thị Peer ID nếu đã kết nối
+                <p>Your Peer ID: <strong>{peerId}</strong></p>
+            )}
             {socket && (
                 <OnlineUsers
                     token={token}

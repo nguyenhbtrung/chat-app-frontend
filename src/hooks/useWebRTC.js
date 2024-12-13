@@ -43,10 +43,10 @@ const useWebRTC = (socket) => {
     };
 
     const sendOffer = async (to) => {
-        if (!dataChannelRef.current) {
-            const dataChannel = peerRef.current.createDataChannel("fileTransfer");
-            dataChannelRef.current = dataChannel;
-        }
+        // if (!dataChannelRef.current) {
+        const dataChannel = peerRef.current.createDataChannel("fileTransfer");
+        dataChannelRef.current = dataChannel;
+        // }
 
         const offer = await peerRef.current.createOffer();
         await peerRef.current.setLocalDescription(offer);
@@ -55,9 +55,9 @@ const useWebRTC = (socket) => {
     };
 
     const handleOffer = async (offer, from) => {
-        if (!peerRef.current) {
-            createPeerConnection();
-        }
+        // if (!peerRef.current) {
+        createPeerConnection();
+        // }
 
         peerRef.current.remotePeerId = from;
         await peerRef.current.setRemoteDescription(new RTCSessionDescription(offer));
