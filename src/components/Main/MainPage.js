@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
-import { Box, Typography, Container } from "@mui/material";
+import { Box, Typography, Container, Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material";
 import useWebRTC from "../../hooks/useWebRTC";
 import OnlineUsers from "./OnlineUsers";
 import FileTransfer from "./FileTransfer";
@@ -9,29 +9,78 @@ const MainPage = () => {
     const [token] = useState(localStorage.getItem("token"));
     const [username] = useState(localStorage.getItem("username"));
     const [socket, setSocket] = useState(null);
+
+    const socketRef = useRef(null);
     const [peerId, setPeerId] = useState("");
+    const [connectionRequest, setConnectionRequest] = useState(null);
+    const { createPeerConnection, sendOffer, sendFile, receivedFiles, CheckSocket } = useWebRTC(socketRef);
 
     useEffect(() => {
         const newSocket = io("http://localhost:8080");
+        socketRef.current = newSocket;
         setSocket(newSocket);
 
         newSocket.on("connect", () => {
             setPeerId(newSocket.id);
         });
 
+        newSocket.on("request-connection", ({ from }) => {
+            setConnectionRequest(from);
+            console.log("socket2", socket);
+            console.log("socketRef2", socketRef.current);
+            CheckSocket(2);
+        });
+
+        newSocket.on("connection-accepted", ({ from }) => {
+            console.log("socket3", socket);
+            console.log("socketRef3", socketRef.current);
+            CheckSocket(3);
+            handleConnectionAccepted(from);
+        });
+
         return () => {
+            console.log("Disconnecting socket...");
             newSocket.disconnect();
         };
     }, []);
 
-    const { createPeerConnection, sendOffer, sendFile, receivedFiles } = useWebRTC(socket);
 
-    const connectToPeer = (userId) => {
+    const handleAcceptConnection = () => {
+        if (!connectionRequest) return;
+
+        socket.emit("connection-accepted", { to: connectionRequest });
+
+        setConnectionRequest(null); // Đóng dialog
+    };
+
+    const handleRejectConnection = () => {
+        setConnectionRequest(null); // Đóng dialog
+    };
+
+    const connectToPeer = (peerId) => {
+        socket.emit("request-connection", peerId);
+        console.log("socket1", socket);
+        console.log("socketRef1", socketRef.current);
+        CheckSocket(1);
+
+        // console.log(socket);
+        // createPeerConnection((data) => {
+        //     console.log("Received file data:", data);
+        // });
+        // sendOffer(peerId);
+    };
+
+    const handleConnectionAccepted = (peerId) => {
+        console.log("socket4", socket);
+        console.log("socketRef4", socketRef.current);
+        CheckSocket(4);
         createPeerConnection((data) => {
             console.log("Received file data:", data);
         });
-        sendOffer(userId);
-    };
+        sendOffer(peerId);
+    }
+
+
 
     return (
         <Container>
@@ -63,6 +112,24 @@ const MainPage = () => {
                     ))}
                 </ul>
             </Box>
+
+            <Dialog open={!!connectionRequest} onClose={handleRejectConnection}>
+                <DialogTitle>Connection Request</DialogTitle>
+                <DialogContent>
+                    <Typography>
+                        User with Peer ID <strong>{connectionRequest}</strong> wants to connect.
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleRejectConnection} color="secondary">
+                        Reject
+                    </Button>
+                    <Button onClick={handleAcceptConnection} color="primary">
+                        Accept
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
         </Container>
     );
 };

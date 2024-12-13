@@ -5,6 +5,14 @@ const useWebRTC = (socket) => {
     const dataChannelRef = useRef();
     const [receivedFiles, setReceivedFiles] = useState([]); // Lưu tệp nhận được
 
+    useEffect(() => {
+        console.log("socket", socket.current);
+    }, [socket]);
+
+    const CheckSocket = (count) => {
+        console.log(`socketWebRTC${count}`, socket.current);
+    };
+
     const createPeerConnection = (onDataReceived) => {
         peerRef.current = new RTCPeerConnection();
 
@@ -34,7 +42,7 @@ const useWebRTC = (socket) => {
 
         peerRef.current.onicecandidate = (event) => {
             if (event.candidate) {
-                socket.emit("candidate", {
+                socket.current.emit("candidate", {
                     candidate: event.candidate,
                     to: peerRef.current.remotePeerId,
                 });
@@ -43,6 +51,8 @@ const useWebRTC = (socket) => {
     };
 
     const sendOffer = async (to) => {
+        console.log("Send offer");
+
         // if (!dataChannelRef.current) {
         const dataChannel = peerRef.current.createDataChannel("fileTransfer");
         dataChannelRef.current = dataChannel;
@@ -51,10 +61,11 @@ const useWebRTC = (socket) => {
         const offer = await peerRef.current.createOffer();
         await peerRef.current.setLocalDescription(offer);
 
-        socket.emit("offer", { offer, to });
+        socket.current.emit("offer", { offer, to });
     };
 
     const handleOffer = async (offer, from) => {
+        console.log("Handle offer");
         // if (!peerRef.current) {
         createPeerConnection();
         const dataChannel = peerRef.current.createDataChannel("fileTransfer");
@@ -67,24 +78,27 @@ const useWebRTC = (socket) => {
         const answer = await peerRef.current.createAnswer();
         await peerRef.current.setLocalDescription(answer);
 
-        socket.emit("answer", { answer, to: from });
+        socket.current.emit("answer", { answer, to: from });
     };
 
     const handleAnswer = async (answer) => {
+        console.log("Handle answer");
         await peerRef.current.setRemoteDescription(new RTCSessionDescription(answer));
     };
 
     const handleCandidate = (candidate) => {
+        console.log("Handle candidate");
         peerRef.current.addIceCandidate(new RTCIceCandidate(candidate));
     };
 
     useEffect(() => {
-        if (!socket) return;
+        if (!socket.current) return;
+        const socketObj = socket.current;
 
-        socket.on("offer", ({ offer, from }) => handleOffer(offer, from));
-        socket.on("answer", ({ answer }) => handleAnswer(answer));
-        socket.on("candidate", ({ candidate }) => handleCandidate(candidate));
-    }, [socket]);
+        socketObj.on("offer", ({ offer, from }) => handleOffer(offer, from));
+        socketObj.on("answer", ({ answer }) => handleAnswer(answer));
+        socketObj.on("candidate", ({ candidate }) => handleCandidate(candidate));
+    }, [socket.current]);
 
     const sendFile = (file) => {
         const chunkSize = 8 * 1024; // 8KB
@@ -132,7 +146,7 @@ const useWebRTC = (socket) => {
 
 
 
-    return { createPeerConnection, sendOffer, sendFile, receivedFiles };
+    return { createPeerConnection, sendOffer, sendFile, receivedFiles, CheckSocket };
 };
 
 export default useWebRTC;
