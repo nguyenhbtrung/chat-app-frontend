@@ -27,12 +27,14 @@ const useWebRTC = (socket) => {
 
             const fileBuffer = [];
             let fileName = "";
+            let senderUsername = "";
 
             channel.onmessage = (e) => {
                 const message = JSON.parse(e.data);
 
                 if (message.type === "meta") {
                     fileName = message.fileName;
+                    senderUsername = message.sender;
                 } else if (message.type === "file") {
                     fileBuffer.push(new Uint8Array(message.data));
                 } else if (message.type === "complete") {
@@ -40,7 +42,11 @@ const useWebRTC = (socket) => {
                     const downloadUrl = URL.createObjectURL(fileBlob);
                     setReceivedFiles((prevFiles) => [
                         ...prevFiles,
-                        { name: fileName, url: downloadUrl },
+                        {
+                            name: fileName,
+                            url: downloadUrl,
+                            sender: senderUsername, // Lưu thêm thông tin username
+                        },
                     ]);
                 }
             };
@@ -121,6 +127,7 @@ const useWebRTC = (socket) => {
         const chunkSize = 8 * 1024; // 8KB
         const dataChannel = dataChannelRef.current;
 
+        const senderUsername = sessionStorage.getItem("username");
         let offset = 0; // Vị trí hiện tại trong file
         let isComplete = false;
 
@@ -156,7 +163,13 @@ const useWebRTC = (socket) => {
             }
         };
 
-        dataChannel.send(JSON.stringify({ type: "meta", fileName: file.name }));
+        dataChannel.send(
+            JSON.stringify({
+                type: "meta",
+                fileName: file.name,
+                sender: senderUsername,
+            })
+        );
         setProgress(0); // Đặt tiến trình về 0 khi bắt đầu
         sendNextChunk();
     };

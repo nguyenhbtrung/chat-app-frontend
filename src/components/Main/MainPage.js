@@ -87,13 +87,17 @@ const MainPage = () => {
                 <ul>
                     {receivedFiles.map((file, index) => (
                         <li key={index}>
-                            <a href={file.url} download={file.name}>
-                                {file.name}
-                            </a>
+                            <Typography variant="body2">
+                                <strong>Sender:</strong> {file.sender} |{" "}
+                                <a href={file.url} download={file.name}>
+                                    {file.name}
+                                </a>
+                            </Typography>
                         </li>
                     ))}
                 </ul>
             </Box>
+
 
             <Dialog open={!!connectionRequest} onClose={handleRejectConnection}>
                 <DialogTitle>Connection Request</DialogTitle>
