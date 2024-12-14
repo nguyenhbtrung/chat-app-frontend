@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from "react";
 const useWebRTC = (socket) => {
     const peerRef = useRef();
     const dataChannelRef = useRef();
-    const [receivedFiles, setReceivedFiles] = useState([]); // Lưu tệp nhận được
+    const [receivedFiles, setReceivedFiles] = useState([]);
+    const [progress, setProgress] = useState(0);
 
     useEffect(() => {
         console.log("socket", socket.current);
@@ -121,48 +122,48 @@ const useWebRTC = (socket) => {
         const dataChannel = dataChannelRef.current;
 
         let offset = 0; // Vị trí hiện tại trong file
-        let isComplete = false; // Đánh dấu khi hoàn tất
+        let isComplete = false;
 
         const sendNextChunk = () => {
-            if (isComplete) return; // Nếu hoàn tất, không tiếp tục gửi
+            if (isComplete) return;
 
             if (offset >= file.size) {
-                // Gửi tín hiệu hoàn tất
                 dataChannel.send(JSON.stringify({ type: "complete" }));
                 console.log("File transfer complete");
-                isComplete = true; // Đánh dấu là đã hoàn tất
+                setProgress(100); // Tiến trình hoàn tất
+                isComplete = true;
                 return;
             }
 
             const chunk = file.slice(offset, offset + chunkSize);
 
-            if (dataChannel.bufferedAmount < 65536) { // 64KB threshold
+            if (dataChannel.bufferedAmount < 65536) {
                 const reader = new FileReader();
                 reader.onload = () => {
                     dataChannel.send(
                         JSON.stringify({ type: "file", data: Array.from(new Uint8Array(reader.result)) })
                     );
                     offset += chunkSize;
-                    sendNextChunk(); // Tiếp tục gửi chunk tiếp theo
+                    setProgress(Math.min((offset / file.size) * 100, 100)); // Cập nhật tiến trình
+                    sendNextChunk();
                 };
                 reader.readAsArrayBuffer(chunk);
             } else {
-                // Chờ khi hàng đợi giảm tải
                 dataChannel.onbufferedamountlow = () => {
-                    dataChannel.onbufferedamountlow = null; // Ngắt lắng nghe để tránh lặp
+                    dataChannel.onbufferedamountlow = null;
                     sendNextChunk();
                 };
             }
         };
 
-        // Gửi metadata trước
         dataChannel.send(JSON.stringify({ type: "meta", fileName: file.name }));
-        sendNextChunk(); // Bắt đầu gửi file
+        setProgress(0); // Đặt tiến trình về 0 khi bắt đầu
+        sendNextChunk();
     };
 
 
 
-    return { createPeerConnection, sendOffer, sendFile, receivedFiles, CheckSocket };
+    return { createPeerConnection, sendOffer, sendFile, receivedFiles, progress, CheckSocket };
 };
 
 export default useWebRTC;

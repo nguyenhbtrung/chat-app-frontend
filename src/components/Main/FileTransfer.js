@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Box, Typography, Button, Input } from "@mui/material";
+import { Box, Typography, Button, Input, LinearProgress } from "@mui/material";
 
-const FileTransfer = ({ sendFile }) => {
+const FileTransfer = ({ sendFile, progress }) => {
     const [file, setFile] = useState(null);
 
     const handleSendFile = () => {
@@ -18,9 +18,23 @@ const FileTransfer = ({ sendFile }) => {
                 onChange={(e) => setFile(e.target.files[0])}
                 sx={{ marginBottom: 2 }}
             />
-            <Button variant="contained" color="primary" onClick={handleSendFile}>
+            <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSendFile}
+                sx={{ marginBottom: 2 }}
+                disabled={progress > 0 && progress < 100} // Vô hiệu hóa khi đang gửi
+            >
                 Send File
             </Button>
+            {progress > 0 && (
+                <Box sx={{ marginTop: 2 }}>
+                    <Typography variant="body2" gutterBottom>
+                        Progress: {Math.round(progress)}%
+                    </Typography>
+                    <LinearProgress variant="determinate" value={progress} />
+                </Box>
+            )}
         </Box>
     );
 };

@@ -13,7 +13,7 @@ const MainPage = () => {
     const socketRef = useRef(null);
     const [peerId, setPeerId] = useState("");
     const [connectionRequest, setConnectionRequest] = useState(null);
-    const { createPeerConnection, sendOffer, sendFile, receivedFiles, CheckSocket } = useWebRTC(socketRef);
+    const { createPeerConnection, sendOffer, sendFile, receivedFiles, progress, CheckSocket } = useWebRTC(socketRef);
 
     useEffect(() => {
         const newSocket = io("http://localhost:8080");
@@ -81,7 +81,7 @@ const MainPage = () => {
                     socket={socket}
                 />
             )}
-            <FileTransfer sendFile={sendFile} />
+            <FileTransfer sendFile={sendFile} progress={progress} />
             <Box sx={{ marginTop: 4 }}>
                 <Typography variant="h5">Received Files</Typography>
                 <ul>
