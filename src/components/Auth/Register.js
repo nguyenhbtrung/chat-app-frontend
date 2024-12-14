@@ -1,36 +1,44 @@
 import React, { useState } from "react";
-import { login } from "../../services/auth";
 import { useNavigate } from "react-router-dom";
 import { Box, TextField, Button, Typography, Container, Alert } from "@mui/material";
+import { register } from "../../services/auth"; // API đăng ký cần được định nghĩa
 
-const Login = ({ onLoginSuccess }) => {
+const Register = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
     const navigate = useNavigate();
 
-    const handleLogin = async () => {
+    const handleRegister = async () => {
+        if (password !== confirmPassword) {
+            setError("Passwords do not match");
+            return;
+        }
         try {
-            const data = await login(username, password);
-            sessionStorage.setItem("token", data.token);
-            sessionStorage.setItem("username", data.username);
-
-            onLoginSuccess();
-            navigate("/"); // Navigate to MainPage
+            await register(username, password);
+            setSuccess("Registration successful. You can now login.");
+            setTimeout(() => navigate("/login"), 2000);
         } catch (err) {
-            setError("Invalid username or password");
-            console.error("Login failed", err);
+            setError("Registration failed. Please try again.");
+            console.error("Register failed", err);
         }
     };
 
     return (
         <Container maxWidth="xs" sx={{ marginTop: 8 }}>
             <Typography variant="h4" gutterBottom align="center">
-                Login
+                Register
             </Typography>
             {error && (
                 <Alert severity="error" sx={{ marginBottom: 2 }}>
                     {error}
+                </Alert>
+            )}
+            {success && (
+                <Alert severity="success" sx={{ marginBottom: 2 }}>
+                    {success}
                 </Alert>
             )}
             <Box component="form" noValidate autoComplete="off">
@@ -51,26 +59,35 @@ const Login = ({ onLoginSuccess }) => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
+                <TextField
+                    label="Confirm Password"
+                    type="password"
+                    fullWidth
+                    variant="outlined"
+                    margin="normal"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                />
                 <Button
                     variant="contained"
                     color="primary"
                     fullWidth
                     sx={{ marginTop: 2 }}
-                    onClick={handleLogin}
+                    onClick={handleRegister}
                 >
-                    Login
+                    Register
                 </Button>
                 <Button
                     color="secondary"
                     fullWidth
                     sx={{ marginTop: 1 }}
-                    onClick={() => navigate("/register")}
+                    onClick={() => navigate("/login")}
                 >
-                    Register
+                    Back to Login
                 </Button>
             </Box>
         </Container>
     );
 };
 
-export default Login;
+export default Register;

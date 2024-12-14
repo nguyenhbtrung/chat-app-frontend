@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography, List, ListItem, Button, Divider, Alert } from "@mui/material";
+import PersonIcon from '@mui/icons-material/Person';
 
 const OnlineUsers = ({ token, connectToPeer, socket }) => {
     const [users, setUsers] = useState([]);
@@ -85,7 +86,19 @@ const OnlineUsers = ({ token, connectToPeer, socket }) => {
                                 </Box>
                             }
                         >
-                            <Typography>{user.username} (Peer ID: {id})</Typography>
+                            <Typography
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 1,
+                                    color: 'text.primary',
+                                    fontWeight: 'bold',
+                                    fontSize: '1.1rem'
+                                }}
+                            >
+                                <PersonIcon sx={{ color: 'primary.main' }} />
+                                {user.username} | Peer ID: {id}
+                            </Typography>
                         </ListItem>
                         <Divider />
                     </React.Fragment>
@@ -93,6 +106,7 @@ const OnlineUsers = ({ token, connectToPeer, socket }) => {
             </List>
         </Box>
     );
+
 };
 
 export default OnlineUsers;

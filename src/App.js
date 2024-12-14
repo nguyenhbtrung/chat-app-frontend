@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./components/Auth/Login";
 import MainPage from "./components/Main/MainPage";
+import Register from "./components/Auth/Register";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(!!sessionStorage.getItem("token")); // Trạng thái xác thực
@@ -11,7 +12,7 @@ const App = () => {
       <Routes>
         {/* Trang Đăng nhập */}
         <Route path="/login" element={<Login onLoginSuccess={() => setIsAuthenticated(true)} />} />
-
+        <Route path="/register" element={<Register />} />
         {/* Trang chính */}
         <Route
           path="/"
