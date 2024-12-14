@@ -12,7 +12,7 @@ const OnlineUsers = ({ token, connectToPeer, socket }) => {
         }
 
         const handleConnect = () => {
-            const username = localStorage.getItem("username");
+            const username = sessionStorage.getItem("username");
             socket.emit("register", username);
         };
 

@@ -1,19 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./components/Auth/Login";
 import MainPage from "./components/Main/MainPage";
 
 const App = () => {
-  const isAuthenticated = !!localStorage.getItem("token"); // Kiểm tra người dùng đã đăng nhập chưa
+  const [isAuthenticated, setIsAuthenticated] = useState(!!sessionStorage.getItem("token")); // Trạng thái xác thực
 
   return (
     <Router>
       <Routes>
-        {/* Trang Đăng ký */}
-        {/* <Route path="/register" element={<Register />} /> */}
-
         {/* Trang Đăng nhập */}
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Login onLoginSuccess={() => setIsAuthenticated(true)} />} />
 
         {/* Trang chính */}
         <Route
@@ -21,7 +18,7 @@ const App = () => {
           element={isAuthenticated ? <MainPage /> : <Navigate to="/login" />}
         />
 
-        {/* Chuyển hướng mặc định */}
+        {/* Điều hướng cho đường dẫn không hợp lệ */}
         <Route path="*" element={<Navigate to={isAuthenticated ? "/" : "/login"} />} />
       </Routes>
     </Router>

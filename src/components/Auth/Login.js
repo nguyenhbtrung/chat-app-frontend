@@ -1,18 +1,22 @@
-import React, { useState } from 'react';
-import { login } from '../../services/auth';
+import React, { useState } from "react";
+import { login } from "../../services/auth";
+import { useNavigate } from "react-router-dom";
 
-
-const Login = () => {
-    const [username, setInputUsername] = useState('');
-    const [password, setPassword] = useState('');
+const Login = ({ onLoginSuccess }) => {
+    const [username, setInputUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const navigate = useNavigate();
 
     const handleLogin = async () => {
         try {
             const data = await login(username, password);
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('username', data.username);
+            sessionStorage.setItem("token", data.token);
+            sessionStorage.setItem("username", data.username);
+
+            onLoginSuccess(); // Gọi hàm để cập nhật trạng thái xác thực
+            navigate("/");    // Điều hướng tới MainPage
         } catch (err) {
-            console.error('Login failed', err);
+            console.error("Login failed", err);
         }
     };
 
@@ -32,7 +36,6 @@ const Login = () => {
             <button onClick={handleLogin}>Login</button>
         </div>
     );
-
 };
 
 export default Login;

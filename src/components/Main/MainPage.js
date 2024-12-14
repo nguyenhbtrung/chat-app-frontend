@@ -6,8 +6,8 @@ import OnlineUsers from "./OnlineUsers";
 import FileTransfer from "./FileTransfer";
 
 const MainPage = () => {
-    const [token] = useState(localStorage.getItem("token"));
-    const [username] = useState(localStorage.getItem("username"));
+    const [token] = useState(sessionStorage.getItem("token"));
+    const [username] = useState(sessionStorage.getItem("username"));
     const [socket, setSocket] = useState(null);
 
     const socketRef = useRef(null);
