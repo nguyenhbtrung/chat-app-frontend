@@ -50,6 +50,10 @@ const MainPage = () => {
     };
 
     const handleRejectConnection = () => {
+        if (!connectionRequest) return;
+
+        socket.emit("connection-rejected", { to: connectionRequest });
+
         setConnectionRequest(null); // Đóng dialog
     };
 

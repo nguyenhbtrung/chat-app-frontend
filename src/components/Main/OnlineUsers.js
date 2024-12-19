@@ -35,10 +35,18 @@ const OnlineUsers = ({ token, connectToPeer, socket }) => {
             }));
         };
 
+        const handleConnectionRejected = ({ from }) => {
+            setConnectionStatus((prev) => ({
+                ...prev,
+                [from]: "",
+            }));
+        };
+
         socket.on("connect", handleConnect);
         socket.on("active-users", handleActiveUsers);
         socket.on("connection-succesful", handleConnectionSuccessful);
         socket.on("peer-disconnected", handlePeerDisconnected);
+        socket.on("connection-rejected", handleConnectionRejected);
 
         return () => {
             socket.off("connect", handleConnect);
