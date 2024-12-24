@@ -62,6 +62,10 @@ const OnlineUsers = ({ token, connectToPeer, socket }) => {
         }));
     };
 
+    const handleDisconnectClick = (id) => {
+
+    };
+
     return (
         <Box sx={{ marginTop: 2, padding: 2, border: "1px solid #ddd", borderRadius: 2 }}>
             <Typography variant="h5" gutterBottom>
@@ -83,14 +87,26 @@ const OnlineUsers = ({ token, connectToPeer, socket }) => {
                                             Connected
                                         </Alert>
                                     )}
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={() => handleConnectClick(id)}
-                                        disabled={connectionStatus[id] === "connected" || connectionStatus[id] === "requesting"} // Vô hiệu hóa nút nếu đã kết nối
-                                    >
-                                        Connect
-                                    </Button>
+                                    {connectionStatus[id] !== "connected" && (
+                                        <Button
+                                            variant="contained"
+                                            color="primary"
+                                            onClick={() => handleConnectClick(id)}
+                                            disabled={connectionStatus[id] === "requesting"} // Vô hiệu hóa nút nếu đã kết nối
+                                        >
+                                            Connect
+                                        </Button>
+                                    )}
+                                    {connectionStatus[id] === "connected" && (
+                                        <Button
+                                            variant="contained"
+                                            color="secondary"
+                                            onClick={() => handleDisconnectClick(id)}
+                                        >
+                                            Disconnect
+                                        </Button>
+                                    )}
+
                                 </Box>
                             }
                         >
