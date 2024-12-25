@@ -17,6 +17,10 @@ import {
     Tab,
     Tabs,
     Alert,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import VideocamIcon from '@mui/icons-material/Videocam';
@@ -131,6 +135,14 @@ const MainPage = () => {
         }
     };
 
+    const handleConnectClick = (id) => {
+        connectToPeer(id);
+        // setConnectionStatus((prev) => ({
+        //     ...prev,
+        //     [id]: "requesting",
+        // }));
+    };
+
 
     return (
         <Box sx={{ backgroundColor: '#f0f8ff' }}>
@@ -198,6 +210,7 @@ const MainPage = () => {
                                     variant="contained"
                                     color="primary"
                                     startIcon={<LinkIcon />}
+                                    onClick={() => handleConnectClick(selectedUser)}
                                 >
                                     CONNECT
                                 </Button>
@@ -312,6 +325,22 @@ const MainPage = () => {
 
                     </Paper>
                 </Grid>
+                <Dialog open={!!connectionRequest} onClose={handleRejectConnection}>
+                    <DialogTitle>Connection Request</DialogTitle>
+                    <DialogContent>
+                        <Typography>
+                            User with Peer ID <strong>{connectionRequest}</strong> wants to connect.
+                        </Typography>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleRejectConnection} color="secondary">
+                            Reject
+                        </Button>
+                        <Button onClick={handleAcceptConnection} color="primary">
+                            Accept
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </Grid>
         </Box >
     );
