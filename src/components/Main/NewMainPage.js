@@ -286,7 +286,7 @@ const MainPage = () => {
 
 
                         {/* Chat Messages */}
-                        <Box sx={{ flexGrow: 1, padding: 2, overflowY: 'auto' }}>
+                        <Box sx={{ flexGrow: 1, padding: 2, overflowY: 'auto', maxHeight: "380px" }}>
 
                             <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
                                 <Avatar sx={{ width: 28, height: 28, marginRight: 1 }}></Avatar>
