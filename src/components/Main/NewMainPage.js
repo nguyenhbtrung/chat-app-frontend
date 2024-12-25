@@ -24,6 +24,7 @@ import LinkIcon from '@mui/icons-material/Link';
 import useWebRTC from '../../hooks/useWebRTC';
 import { io } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
+import OnlineUsers from './NewOnlineUsers';
 
 const MainPage = () => {
     const [token] = useState(sessionStorage.getItem("token"));
@@ -93,10 +94,16 @@ const MainPage = () => {
     };
 
     const [selectedUser, setSelectedUser] = useState(null);
+    const [selectedUserData, setSelectedUserData] = useState(null);
     const [selectedTab, setSelectedTab] = useState(0);
 
-    const handleUserClick = (index) => {
-        setSelectedUser(index);
+    const handleUserClick = (id, username) => {
+        setSelectedUser(id);
+        setSelectedUserData((prev) => ({
+            ...prev,
+            username: username,
+            id: id,
+        }));
     };
 
     const handleTabChange = (event, newValue) => {
@@ -107,48 +114,13 @@ const MainPage = () => {
         switch (selectedTab) {
             case 0:
                 return (
-                    <List sx={{ overflowY: 'auto', maxHeight: 380 }}>
-                        {Array(15)
-                            .fill(0)
-                            .map((_, index) => (
-                                <ListItem
-                                    key={index}
-                                    button
-                                    onClick={() => handleUserClick(index)}
-                                    sx={{
-                                        borderRadius: 2,
-                                        backgroundColor: selectedUser === index ? '#f0f0f0' : 'transparent',
-                                        cursor: 'pointer',
-                                    }}
-                                >
-                                    <ListItemAvatar>
-                                        <Avatar />
-                                    </ListItemAvatar>
-                                    <ListItemText
-                                        primary="u1"
-                                        secondary="Peer Id: BKPqDZsxnno7vNPAAAF"
-                                    />
-                                    {index === 0 && (
-                                        <Alert
-                                            severity="success"
-                                            sx={{
-                                                padding: "1px 3px",
-                                            }}
-                                        >
-                                            Connected
-                                        </Alert>
-                                    )}
-                                    {index === 1 && (
-                                        <Alert
-                                            severity="info"
-                                            sx={{ padding: "0px 3px", maxWidth: "100px" }}
-                                        >
-                                            Sending Request...
-                                        </Alert>
-                                    )}
-                                </ListItem>
-                            ))}
-                    </List>
+                    <OnlineUsers
+                        handleUserClick={handleUserClick}
+                        selectedUser={selectedUser}
+                        token={token}
+                        connectToPeer={connectToPeer}
+                        socket={socket}
+                    />
                 );
             case 1:
                 return <Typography variant="body1">Offline Content</Typography>;
@@ -215,9 +187,9 @@ const MainPage = () => {
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                 <Avatar sx={{ marginRight: 2 }}></Avatar>
                                 <Box>
-                                    <Typography variant="h6">u1</Typography>
+                                    <Typography variant="h6">{selectedUserData?.username}</Typography>
                                     <Typography variant="body2" color="text.secondary">
-                                        Peer Id: BKPqDZsxnno7vNPAAAF
+                                        Peer Id: {selectedUser}
                                     </Typography>
                                 </Box>
                             </Box>
