@@ -6,7 +6,7 @@ import OnlineUsers from "./OnlineUsers";
 import FileTransfer from "./FileTransfer";
 import { useNavigate } from "react-router-dom";
 
-const MainPage = () => {
+const OldMainPage = () => {
     const [token] = useState(sessionStorage.getItem("token"));
     const [username] = useState(sessionStorage.getItem("username"));
     const [socket, setSocket] = useState(null);
@@ -141,4 +141,4 @@ const MainPage = () => {
     );
 };
 
-export default MainPage;
+export default OldMainPage;

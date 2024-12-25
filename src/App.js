@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./components/Auth/Login";
-import MainPage from "./components/Main/MainPage";
+import OldMainPage from "./components/Main/MainPage";
 import Register from "./components/Auth/Register";
+import MainPage from "./components/Main/NewMainPage";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(!!sessionStorage.getItem("token")); // Trạng thái xác thực
@@ -16,8 +17,9 @@ const App = () => {
         {/* Trang chính */}
         <Route
           path="/"
-          element={isAuthenticated ? <MainPage /> : <Navigate to="/login" />}
+          element={isAuthenticated ? <OldMainPage /> : <Navigate to="/login" />}
         />
+        <Route path="/mp" element={<MainPage />} />
 
         {/* Điều hướng cho đường dẫn không hợp lệ */}
         <Route path="*" element={<Navigate to={isAuthenticated ? "/" : "/login"} />} />
