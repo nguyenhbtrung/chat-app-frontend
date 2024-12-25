@@ -1,10 +1,9 @@
-import { Alert, Avatar, List, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
+import { Alert, Avatar, Box, CircularProgress, List, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
 import { useEffect, useState } from "react";
 
 
-const OnlineUsers = ({ token, connectToPeer, socket, handleUserClick, selectedUser }) => {
+const OnlineUsers = ({ token, connectToPeer, socket, handleUserClick, selectedUser, connectionStatus }) => {
     const [users, setUsers] = useState([]);
-    const [connectionStatus, setConnectionStatus] = useState({});
 
     useEffect(() => {
         if (!socket) {
@@ -19,33 +18,33 @@ const OnlineUsers = ({ token, connectToPeer, socket, handleUserClick, selectedUs
 
 
 
-        const handleConnectionSuccessful = ({ remote }) => {
-            setConnectionStatus((prev) => ({
-                ...prev,
-                [remote]: "connected",
-            }));
-        };
+        // const handleConnectionSuccessful = ({ remote }) => {
+        //     setConnectionStatus((prev) => ({
+        //         ...prev,
+        //         [remote]: "connected",
+        //     }));
+        // };
 
-        const handlePeerDisconnected = ({ remote }) => {
-            setConnectionStatus((prev) => ({
-                ...prev,
-                [remote]: "disconnected",
-            }));
-        };
+        // const handlePeerDisconnected = ({ remote }) => {
+        //     setConnectionStatus((prev) => ({
+        //         ...prev,
+        //         [remote]: "disconnected",
+        //     }));
+        // };
 
-        const handleConnectionRejected = ({ from }) => {
-            setConnectionStatus((prev) => ({
-                ...prev,
-                [from]: "",
-            }));
-        };
+        // const handleConnectionRejected = ({ from }) => {
+        //     setConnectionStatus((prev) => ({
+        //         ...prev,
+        //         [from]: "",
+        //     }));
+        // };
 
         socket.on("connect", handleConnect);
         socket.on("active-users", handleActiveUsers);
         socket.on("get-active-users", handleActiveUsers);
-        socket.on("connection-succesful", handleConnectionSuccessful);
-        socket.on("peer-disconnected", handlePeerDisconnected);
-        socket.on("connection-rejected", handleConnectionRejected);
+        // socket.on("connection-succesful", handleConnectionSuccessful);
+        // socket.on("peer-disconnected", handlePeerDisconnected);
+        // socket.on("connection-rejected", handleConnectionRejected);
 
         return () => {
             socket.off("connect", handleConnect);
@@ -63,17 +62,6 @@ const OnlineUsers = ({ token, connectToPeer, socket, handleUserClick, selectedUs
         setUsers(activeUsers.filter(([id]) => id !== socket.id)); // Loại bỏ chính mình
     };
 
-    const handleConnectClick = (id) => {
-        connectToPeer(id);
-        setConnectionStatus((prev) => ({
-            ...prev,
-            [id]: "requesting",
-        }));
-    };
-
-    const handleDisconnectClick = (id) => {
-
-    };
 
     return (
         <List sx={{ overflowY: 'auto', maxHeight: 380 }}>
@@ -98,24 +86,22 @@ const OnlineUsers = ({ token, connectToPeer, socket, handleUserClick, selectedUs
                             secondary={`Peer Id: ${id}`}
                         />
 
-                        {id === 0 && (
+                        {connectionStatus[id] === "connected" && (
                             <Alert
                                 severity="success"
                                 sx={{
                                     padding: "1px 3px",
                                 }}
                             >
-                                Connected
+
                             </Alert>
                         )}
-                        {id === 1 && (
-                            <Alert
-                                severity="info"
-                                sx={{ padding: "0px 3px", maxWidth: "100px" }}
-                            >
-                                Sending Request...
-                            </Alert>
+                        {connectionStatus[id] === "requesting" && (
+                            <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 2 }}>
+                                <CircularProgress size={20} />
+                            </Box>
                         )}
+
                     </ListItem>
                 ))}
         </List>

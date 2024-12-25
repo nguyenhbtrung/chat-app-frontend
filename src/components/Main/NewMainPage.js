@@ -39,12 +39,34 @@ const MainPage = () => {
     const socketRef = useRef(null);
     const [peerId, setPeerId] = useState("");
     const [connectionRequest, setConnectionRequest] = useState(null);
+    const [connectionStatus, setConnectionStatus] = useState({});
     const { createPeerConnection, sendOffer, sendFile, receivedFiles, progress, CheckSocket } = useWebRTC(socketRef);
 
     useEffect(() => {
         const newSocket = io("http://localhost:8080");
         socketRef.current = newSocket;
         setSocket(newSocket);
+
+        const handleConnectionSuccessful = ({ remote }) => {
+            setConnectionStatus((prev) => ({
+                ...prev,
+                [remote]: "connected",
+            }));
+        };
+
+        const handlePeerDisconnected = ({ remote }) => {
+            setConnectionStatus((prev) => ({
+                ...prev,
+                [remote]: "disconnected",
+            }));
+        };
+
+        const handleConnectionRejected = ({ from }) => {
+            setConnectionStatus((prev) => ({
+                ...prev,
+                [from]: "",
+            }));
+        };
 
         newSocket.on("connect", () => {
             setPeerId(newSocket.id);
@@ -58,11 +80,16 @@ const MainPage = () => {
             handleConnectionAccepted(from);
         });
 
+        newSocket.on("connection-succesful", handleConnectionSuccessful);
+        newSocket.on("peer-disconnected", handlePeerDisconnected);
+        newSocket.on("connection-rejected", handleConnectionRejected);
+
         return () => {
             console.log("Disconnecting socket...");
             newSocket.disconnect();
         };
     }, []);
+
 
     const handleAcceptConnection = () => {
         if (!connectionRequest) return;
@@ -124,6 +151,7 @@ const MainPage = () => {
                         token={token}
                         connectToPeer={connectToPeer}
                         socket={socket}
+                        connectionStatus={connectionStatus}
                     />
                 );
             case 1:
@@ -137,10 +165,14 @@ const MainPage = () => {
 
     const handleConnectClick = (id) => {
         connectToPeer(id);
-        // setConnectionStatus((prev) => ({
-        //     ...prev,
-        //     [id]: "requesting",
-        // }));
+        setConnectionStatus((prev) => ({
+            ...prev,
+            [id]: "requesting",
+        }));
+    };
+
+    const handleDisconnectClick = (id) => {
+
     };
 
 
@@ -205,25 +237,52 @@ const MainPage = () => {
                                     </Typography>
                                 </Box>
                             </Box>
-                            <Box>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    startIcon={<LinkIcon />}
-                                    onClick={() => handleConnectClick(selectedUser)}
-                                >
-                                    CONNECT
-                                </Button>
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                {connectionStatus[selectedUser] === "requesting" && (
+                                    <Alert severity="info" sx={{ marginRight: 2, padding: "2px 8px" }}>
+                                        Sending Request...
+                                    </Alert>
+                                )}
+                                {connectionStatus[selectedUser] === "connected" && (
+                                    <Alert severity="success" sx={{ marginRight: 2, padding: "2px 8px" }}>
+                                        Connected
+                                    </Alert>
+                                )}
+
+                                {connectionStatus[selectedUser] !== "connected" && (
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        startIcon={<LinkIcon />}
+                                        onClick={() => handleConnectClick(selectedUser)}
+                                        disabled={connectionStatus[selectedUser] === "requesting"}
+                                        sx={{ marginRight: 2 }}
+                                    >
+                                        CONNECT
+                                    </Button>
+                                )}
+                                {connectionStatus[selectedUser] === "connected" && (
+                                    <Button
+                                        variant="contained"
+                                        color="error"
+                                        onClick={() => handleDisconnectClick(selectedUser)}
+                                        sx={{ marginRight: 2 }}
+                                    >
+                                        Disconnect
+                                    </Button>
+                                )}
+
                                 <Button
                                     variant="contained"
                                     color="secondary"
                                     startIcon={<VideocamIcon />}
-                                    sx={{ marginLeft: 1 }}
                                 >
                                     CALL VIDEO
                                 </Button>
                             </Box>
                         </Box>
+
+
 
 
                         {/* Chat Messages */}
