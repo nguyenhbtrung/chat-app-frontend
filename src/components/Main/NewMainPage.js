@@ -33,6 +33,7 @@ import { io } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
 import OnlineUsers from './NewOnlineUsers';
 import { v4 as uuidv4 } from 'uuid';
+import FileList from './FileList';
 
 const MainPage = () => {
     const [token] = useState(sessionStorage.getItem("token"));
@@ -182,7 +183,9 @@ const MainPage = () => {
             case 1:
                 return <Typography variant="body1">Offline Content</Typography>;
             case 2:
-                return <Typography variant="body1">Received Files Content</Typography>;
+                return (
+                    <FileList files={receivedFiles} />
+                );
             default:
                 return null;
         }
