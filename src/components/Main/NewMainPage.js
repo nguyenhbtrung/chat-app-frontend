@@ -21,26 +21,47 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
+    LinearProgress,
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import LinkIcon from '@mui/icons-material/Link';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import useWebRTC from '../../hooks/useWebRTC';
 import { io } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
 import OnlineUsers from './NewOnlineUsers';
+import { v4 as uuidv4 } from 'uuid';
 
 const MainPage = () => {
     const [token] = useState(sessionStorage.getItem("token"));
     const [username] = useState(sessionStorage.getItem("username"));
     const [socket, setSocket] = useState(null);
+    const [file, setFile] = useState(null);
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [selectedUserData, setSelectedUserData] = useState(null);
+    const [selectedTab, setSelectedTab] = useState(0);
+    const [usersData, setUsersData] = useState({});
     const navigate = useNavigate();
 
     const socketRef = useRef(null);
     const [peerId, setPeerId] = useState("");
     const [connectionRequest, setConnectionRequest] = useState(null);
     const [connectionStatus, setConnectionStatus] = useState({});
-    const { createPeerConnection, sendOffer, sendFile, receivedFiles, progress, CheckSocket } = useWebRTC(socketRef);
+
+    const OnReceivedFile = (data, peerId) => {
+        const uniqueId = uuidv4();
+        const newMessage = {
+            id: uniqueId,
+            type: "file",
+            status: "sent",
+            data: data,
+        };
+        setUsersData(prev => ({ ...prev, [peerId]: [...(prev[peerId] || []), newMessage] }));
+
+    };
+
+    const { createPeerConnection, sendOffer, sendFile, receivedFiles, progress, CheckSocket } = useWebRTC(socketRef, OnReceivedFile);
 
     useEffect(() => {
         const newSocket = io("http://localhost:8080");
@@ -124,10 +145,6 @@ const MainPage = () => {
         navigate("/login");
     };
 
-    const [selectedUser, setSelectedUser] = useState(null);
-    const [selectedUserData, setSelectedUserData] = useState(null);
-    const [selectedTab, setSelectedTab] = useState(0);
-
     const handleUserClick = (id, username) => {
         setSelectedUser(id);
         setSelectedUserData((prev) => ({
@@ -174,6 +191,39 @@ const MainPage = () => {
     const handleDisconnectClick = (id) => {
 
     };
+
+    const handleSendFile = () => {
+        if (!file) return;
+        const uniqueId = uuidv4();
+        const newMessage = {
+            id: uniqueId,
+            type: "file",
+            status: "sending",
+            data: {
+                name: file.name,
+                sender: username,
+                senderId: peerId,
+            },
+        };
+        setUsersData(prev => ({ ...prev, [selectedUser]: [...(prev[selectedUser] || []), newMessage] }));
+        const toPeerId = selectedUser;
+        sendFile(file, (downloadURL) => { OnSendFileComplete(uniqueId, toPeerId, downloadURL); });
+
+    };
+
+    const OnSendFileComplete = (fileId, selectedUser, downloadURL) => {
+        setUsersData(prev => ({
+            ...prev,
+            [selectedUser]: prev[selectedUser].map(message =>
+                message.id === fileId
+                    ? { ...message, status: "sent", data: { ...message.data, url: downloadURL } }
+                    : message
+            )
+        }));
+    };
+
+
+
 
 
     return (
@@ -328,6 +378,88 @@ const MainPage = () => {
                                     hello
                                 </Box>
                             </Box>
+
+
+
+                            {usersData[selectedUser]?.map((message, index) => (
+                                <Box key={index}>
+                                    {message.type === "file" && message.status === "sending" && message.data.senderId === peerId && (
+                                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 1 }}>
+                                            <Box
+                                                sx={{
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    alignItems: 'flex-end',
+                                                    padding: 1,
+                                                    borderRadius: 2,
+                                                    backgroundColor: '#673ab7',
+                                                    color: '#fff',
+                                                    maxWidth: '70%',
+                                                }}
+                                            >
+                                                <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
+                                                    <InsertDriveFileIcon sx={{ marginRight: 1 }} />
+                                                    <strong>{message?.data?.name}</strong>
+                                                </Box>
+                                                <LinearProgress variant="determinate" value={progress} sx={{ width: '100%' }} />
+                                            </Box>
+                                        </Box>
+                                    )}
+                                    {message.type === "file" && message.status === "sent" && message.data.senderId === peerId && (
+                                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 1 }}>
+                                            <Box
+                                                sx={{
+                                                    padding: 1,
+                                                    borderRadius: 2,
+                                                    backgroundColor: '#673ab7',
+                                                    color: '#fff',
+                                                    maxWidth: '70%',
+                                                }}
+                                            >
+                                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                    <InsertDriveFileIcon sx={{ marginRight: 1 }} />
+                                                    <a
+                                                        href={message?.data?.url}
+                                                        download={message?.data?.name}
+                                                        style={{ color: 'inherit', fontWeight: 'bold' }}
+                                                    >
+                                                        {message?.data?.name}
+                                                    </a>
+                                                </Box>
+                                            </Box>
+                                        </Box>
+                                    )}
+                                    {message.type === "file" && message.status === "sent" && message.data.senderId !== peerId && (
+                                        <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
+                                            <Avatar sx={{ width: 28, height: 28, marginRight: 1 }}></Avatar>
+                                            <Box
+                                                sx={{
+                                                    padding: 1,
+                                                    borderRadius: 2,
+                                                    backgroundColor: '#f1f1f1',
+                                                    maxWidth: '70%',
+                                                }}
+                                            >
+                                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                    <InsertDriveFileIcon sx={{ marginRight: 1 }} />
+                                                    <a
+                                                        href={message?.data?.url}
+                                                        download={message?.data?.name}
+                                                        style={{ color: 'inherit', fontWeight: 'bold' }}
+                                                    >
+                                                        {message?.data?.name}
+                                                    </a>
+                                                </Box>
+                                            </Box>
+                                        </Box>
+                                    )}
+
+
+                                </Box>
+                            ))}
+
+
+
                         </Box>
 
                         {/* Chat Input */}
@@ -343,6 +475,7 @@ const MainPage = () => {
                                 type="file"
                                 variant="outlined"
                                 size="small"
+                                onChange={(e) => setFile(e.target.files[0])}
                                 sx={{
                                     marginRight: 1,
                                     flex: 1, // Chiếm 1 nửa không gian
@@ -351,6 +484,8 @@ const MainPage = () => {
                             <Button
                                 variant="contained"
                                 color="primary"
+                                onClick={handleSendFile}
+                                disabled={progress > 0 && progress < 100}
                                 sx={{
                                     marginRight: 1,
                                     whiteSpace: 'nowrap', // Đảm bảo nội dung không xuống dòng

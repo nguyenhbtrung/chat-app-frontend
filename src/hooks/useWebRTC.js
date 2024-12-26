@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-const useWebRTC = (socket) => {
+const useWebRTC = (socket, OnReceivedFile) => {
     const peerRef = useRef();
     const dataChannelRef = useRef();
     const [receivedFiles, setReceivedFiles] = useState([]);
@@ -28,6 +28,7 @@ const useWebRTC = (socket) => {
             const fileBuffer = [];
             let fileName = "";
             let senderUsername = "";
+            let peerId = "";
 
             channel.onmessage = (e) => {
                 const message = JSON.parse(e.data);
@@ -35,19 +36,22 @@ const useWebRTC = (socket) => {
                 if (message.type === "meta") {
                     fileName = message.fileName;
                     senderUsername = message.sender;
+                    peerId = message.id;
                 } else if (message.type === "file") {
                     fileBuffer.push(new Uint8Array(message.data));
                 } else if (message.type === "complete") {
                     const fileBlob = new Blob(fileBuffer);
                     const downloadUrl = URL.createObjectURL(fileBlob);
+                    const data = {
+                        name: fileName,
+                        url: downloadUrl,
+                        sender: senderUsername,
+                        senderId: peerId,
+                    };
                     setReceivedFiles((prevFiles) => [
-                        ...prevFiles,
-                        {
-                            name: fileName,
-                            url: downloadUrl,
-                            sender: senderUsername, // Lưu thêm thông tin username
-                        },
+                        ...prevFiles, data
                     ]);
+                    if (OnReceivedFile) OnReceivedFile(data, peerId);
                 }
             };
         };
@@ -123,7 +127,7 @@ const useWebRTC = (socket) => {
         socketObj.on("candidate", ({ candidate }) => handleCandidate(candidate));
     }, [socket.current]);
 
-    const sendFile = (file) => {
+    const sendFile = (file, onComplete = (downloadURL) => { }) => {
         const chunkSize = 8 * 1024; // 8KB
         const dataChannel = dataChannelRef.current;
 
@@ -139,6 +143,8 @@ const useWebRTC = (socket) => {
                 console.log("File transfer complete");
                 setProgress(100); // Tiến trình hoàn tất
                 isComplete = true;
+                const downloadURL = URL.createObjectURL(file);
+                onComplete(downloadURL);
                 return;
             }
 
@@ -168,6 +174,7 @@ const useWebRTC = (socket) => {
                 type: "meta",
                 fileName: file.name,
                 sender: senderUsername,
+                id: socket.current.id,
             })
         );
         setProgress(0); // Đặt tiến trình về 0 khi bắt đầu
