@@ -95,8 +95,8 @@ const MainPage = () => {
             setPeerId(newSocket.id);
         });
 
-        newSocket.on("request-connection", ({ from }) => {
-            setConnectionRequest(from);
+        newSocket.on("request-connection", ({ from, username }) => {
+            setConnectionRequest({ id: from, username: username });
         });
 
         newSocket.on("connection-accepted", ({ from }) => {
@@ -117,7 +117,13 @@ const MainPage = () => {
     const handleAcceptConnection = () => {
         if (!connectionRequest) return;
 
-        socket.emit("connection-accepted", { to: connectionRequest });
+        socket.emit("connection-accepted", { to: connectionRequest.id });
+        setSelectedUser(connectionRequest.id);
+        setSelectedUserData((prev) => ({
+            ...prev,
+            username: connectionRequest.username,
+            id: connectionRequest.id,
+        }));
 
         setConnectionRequest(null); // Đóng dialog
     };
@@ -131,7 +137,7 @@ const MainPage = () => {
     };
 
     const connectToPeer = (peerId) => {
-        socket.emit("request-connection", peerId);
+        socket.emit("request-connection", { peerId, requestUsername: username });
     };
 
     const handleConnectionAccepted = (peerId) => {
@@ -262,7 +268,7 @@ const MainPage = () => {
                     <Typography variant="h6" sx={{ flexGrow: 1 }}>
                         File Sharing
                     </Typography>
-                    <Button color="inherit">LOGOUT</Button>
+                    <Button color="inherit" onClick={handleLogout}>Logout</Button>
                 </Toolbar>
             </AppBar>
 
@@ -333,10 +339,10 @@ const MainPage = () => {
                                         color="primary"
                                         startIcon={<LinkIcon />}
                                         onClick={() => handleConnectClick(selectedUser)}
-                                        disabled={connectionStatus[selectedUser] === "requesting"}
+                                        disabled={connectionStatus[selectedUser] === "requesting" || !selectedUser}
                                         sx={{ marginRight: 2 }}
                                     >
-                                        CONNECT
+                                        Connect
                                     </Button>
                                 )}
                                 {connectionStatus[selectedUser] === "connected" && (
@@ -353,6 +359,7 @@ const MainPage = () => {
                                 <Button
                                     variant="contained"
                                     color="secondary"
+                                    disabled={!selectedUser}
                                     startIcon={<VideocamIcon />}
                                 >
                                     CALL VIDEO
@@ -562,7 +569,7 @@ const MainPage = () => {
                                 variant="contained"
                                 color="primary"
                                 onClick={handleSendFile}
-                                disabled={progress > 0 && progress < 100}
+                                disabled={!selectedUser || (progress > 0 && progress < 100)}
                                 sx={{
                                     marginRight: 1,
                                     whiteSpace: 'nowrap', // Đảm bảo nội dung không xuống dòng
@@ -591,7 +598,11 @@ const MainPage = () => {
                                     },
                                 }}
                             />
-                            <IconButton color="primary" onClick={handleSendTextMessage}>
+                            <IconButton
+                                color="primary"
+                                disabled={!selectedUser}
+                                onClick={handleSendTextMessage}
+                            >
                                 <SendIcon />
                             </IconButton>
                         </Box>
@@ -602,7 +613,7 @@ const MainPage = () => {
                     <DialogTitle>Connection Request</DialogTitle>
                     <DialogContent>
                         <Typography>
-                            User with Peer ID <strong>{connectionRequest}</strong> wants to connect.
+                            User <strong>{connectionRequest?.username}</strong> with Peer ID <strong>{connectionRequest?.id}</strong> wants to connect.
                         </Typography>
                     </DialogContent>
                     <DialogActions>
