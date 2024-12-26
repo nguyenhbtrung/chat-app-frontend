@@ -4,7 +4,7 @@ import DescriptionIcon from "@mui/icons-material/Description";
 
 const FileList = ({ files }) => {
     return (
-        <List>
+        <List sx={{ overflowY: 'auto', maxHeight: 365 }}>
             {files.map((file, index) => (
                 <a
                     key={index}

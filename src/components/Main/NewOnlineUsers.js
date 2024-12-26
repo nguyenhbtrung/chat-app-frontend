@@ -18,33 +18,9 @@ const OnlineUsers = ({ token, connectToPeer, socket, handleUserClick, selectedUs
 
 
 
-        // const handleConnectionSuccessful = ({ remote }) => {
-        //     setConnectionStatus((prev) => ({
-        //         ...prev,
-        //         [remote]: "connected",
-        //     }));
-        // };
-
-        // const handlePeerDisconnected = ({ remote }) => {
-        //     setConnectionStatus((prev) => ({
-        //         ...prev,
-        //         [remote]: "disconnected",
-        //     }));
-        // };
-
-        // const handleConnectionRejected = ({ from }) => {
-        //     setConnectionStatus((prev) => ({
-        //         ...prev,
-        //         [from]: "",
-        //     }));
-        // };
-
         socket.on("connect", handleConnect);
         socket.on("active-users", handleActiveUsers);
         socket.on("get-active-users", handleActiveUsers);
-        // socket.on("connection-succesful", handleConnectionSuccessful);
-        // socket.on("peer-disconnected", handlePeerDisconnected);
-        // socket.on("connection-rejected", handleConnectionRejected);
 
         return () => {
             socket.off("connect", handleConnect);
@@ -64,7 +40,7 @@ const OnlineUsers = ({ token, connectToPeer, socket, handleUserClick, selectedUs
 
 
     return (
-        <List sx={{ overflowY: 'auto', maxHeight: 380 }}>
+        <List sx={{ overflowY: 'auto', maxHeight: 365 }}>
             {
                 // Array(15).fill(0).map((_, id)
                 users.map(([id, user]) => (

@@ -266,7 +266,7 @@ const MainPage = () => {
     return (
         <Box sx={{ backgroundColor: '#f0f8ff' }}>
             {/* AppBar */}
-            <AppBar position="static" color="primary">
+            <AppBar position="fixed" color="primary">
                 <Toolbar>
                     <Typography variant="h6" sx={{ flexGrow: 1 }}>
                         File Sharing
@@ -276,7 +276,7 @@ const MainPage = () => {
             </AppBar>
 
             {/* Main Content */}
-            <Grid container spacing={2} sx={{ height: 'calc(100vh - 64px)', padding: 2 }}>
+            <Grid container spacing={2} sx={{ height: 'calc(100vh - 64px)', padding: 2, marginTop: '64px' }}>
                 {/* Left Sidebar */}
                 <Grid item xs={4}>
                     <Paper elevation={3} sx={{ height: '100%', maxHeight: 'calc(100vh - 64px)', padding: 2, borderRadius: 4, overflowY: 'auto' }}>
@@ -374,7 +374,7 @@ const MainPage = () => {
 
 
                         {/* Chat Messages */}
-                        <Box sx={{ flexGrow: 1, padding: 2, overflowY: 'auto', maxHeight: "380px" }}>
+                        <Box sx={{ flexGrow: 1, padding: 2, overflowY: 'auto', maxHeight: "365px" }}>
 
                             <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
                                 <Avatar sx={{ width: 28, height: 28, marginRight: 1 }}></Avatar>
