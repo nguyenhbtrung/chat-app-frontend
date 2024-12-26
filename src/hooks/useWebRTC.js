@@ -37,6 +37,7 @@ const useWebRTC = (socket, OnReceivedMessage) => {
                     fileName = message.fileName;
                     senderUsername = message.sender;
                     peerId = message.id;
+                    fileBuffer.length = 0;
                 } else if (message.type === "file") {
                     fileBuffer.push(new Uint8Array(message.data));
                 } else if (message.type === "complete") {
@@ -52,6 +53,7 @@ const useWebRTC = (socket, OnReceivedMessage) => {
                         ...prevFiles, data
                     ]);
                     if (OnReceivedMessage) OnReceivedMessage("file", data, peerId);
+                    fileBuffer.length = 0;
                 } else if (message.type === "text") {
                     if (OnReceivedMessage) OnReceivedMessage("text", message.data, message.data.senderId);
                 }
