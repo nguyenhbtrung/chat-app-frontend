@@ -572,7 +572,7 @@ const MainPage = () => {
                                 variant="contained"
                                 color="primary"
                                 onClick={handleSendFile}
-                                disabled={!selectedUser || (progress > 0 && progress < 100)}
+                                disabled={connectionStatus[selectedUser] !== "connected" || (progress > 0 && progress < 100)}
                                 sx={{
                                     marginRight: 1,
                                     whiteSpace: 'nowrap', // Đảm bảo nội dung không xuống dòng
@@ -603,7 +603,7 @@ const MainPage = () => {
                             />
                             <IconButton
                                 color="primary"
-                                disabled={!selectedUser}
+                                disabled={connectionStatus[selectedUser] !== "connected"}
                                 onClick={handleSendTextMessage}
                             >
                                 <SendIcon />
