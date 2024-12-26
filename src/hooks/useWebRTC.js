@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-const useWebRTC = (socket, OnReceivedFile) => {
+const useWebRTC = (socket, OnReceivedMessage) => {
     const peerRef = useRef();
     const dataChannelRef = useRef();
     const [receivedFiles, setReceivedFiles] = useState([]);
@@ -51,7 +51,9 @@ const useWebRTC = (socket, OnReceivedFile) => {
                     setReceivedFiles((prevFiles) => [
                         ...prevFiles, data
                     ]);
-                    if (OnReceivedFile) OnReceivedFile(data, peerId);
+                    if (OnReceivedMessage) OnReceivedMessage("file", data, peerId);
+                } else if (message.type === "text") {
+                    if (OnReceivedMessage) OnReceivedMessage("text", message.data, message.data.senderId);
                 }
             };
         };
@@ -127,6 +129,21 @@ const useWebRTC = (socket, OnReceivedFile) => {
         socketObj.on("candidate", ({ candidate }) => handleCandidate(candidate));
     }, [socket.current]);
 
+    const sendTextMessage = (data, onComplete = () => { }) => {
+        const dataChannel = dataChannelRef.current;
+
+        if (!dataChannel) {
+            return;
+        }
+        dataChannel.send(
+            JSON.stringify({
+                type: "text",
+                data: data,
+            })
+        );
+        onComplete();
+    };
+
     const sendFile = (file, onComplete = (downloadURL) => { }) => {
         const chunkSize = 8 * 1024; // 8KB
         const dataChannel = dataChannelRef.current;
@@ -183,7 +200,7 @@ const useWebRTC = (socket, OnReceivedFile) => {
 
 
 
-    return { createPeerConnection, sendOffer, sendFile, receivedFiles, progress, CheckSocket };
+    return { createPeerConnection, sendOffer, sendFile, receivedFiles, progress, CheckSocket, sendTextMessage };
 };
 
 export default useWebRTC;

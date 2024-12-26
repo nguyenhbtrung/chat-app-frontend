@@ -22,6 +22,7 @@ import {
     DialogContent,
     DialogActions,
     LinearProgress,
+    CircularProgress,
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import VideocamIcon from '@mui/icons-material/Videocam';
@@ -38,6 +39,7 @@ const MainPage = () => {
     const [username] = useState(sessionStorage.getItem("username"));
     const [socket, setSocket] = useState(null);
     const [file, setFile] = useState(null);
+    const [textMessage, setTextMessage] = useState("");
     const [selectedUser, setSelectedUser] = useState(null);
     const [selectedUserData, setSelectedUserData] = useState(null);
     const [selectedTab, setSelectedTab] = useState(0);
@@ -49,11 +51,11 @@ const MainPage = () => {
     const [connectionRequest, setConnectionRequest] = useState(null);
     const [connectionStatus, setConnectionStatus] = useState({});
 
-    const OnReceivedFile = (data, peerId) => {
+    const OnReceivedMessage = (type, data, peerId) => {
         const uniqueId = uuidv4();
         const newMessage = {
             id: uniqueId,
-            type: "file",
+            type: type,
             status: "sent",
             data: data,
         };
@@ -61,7 +63,7 @@ const MainPage = () => {
 
     };
 
-    const { createPeerConnection, sendOffer, sendFile, receivedFiles, progress, CheckSocket } = useWebRTC(socketRef, OnReceivedFile);
+    const { createPeerConnection, sendOffer, sendFile, receivedFiles, progress, CheckSocket, sendTextMessage } = useWebRTC(socketRef, OnReceivedMessage);
 
     useEffect(() => {
         const newSocket = io("http://localhost:8080");
@@ -222,9 +224,35 @@ const MainPage = () => {
         }));
     };
 
+    const handleSendTextMessage = () => {
+        if (!textMessage.trim()) return;
+        const uniqueId = uuidv4();
+        const newMessage = {
+            id: uniqueId,
+            type: "text",
+            status: "sending",
+            data: {
+                content: textMessage.trim(),
+                sender: username,
+                senderId: peerId,
+            },
+        };
+        setUsersData(prev => ({ ...prev, [selectedUser]: [...(prev[selectedUser] || []), newMessage] }));
+        const toPeerId = selectedUser;
+        sendTextMessage(newMessage.data, () => { OnSendTextMessageComplete(uniqueId, toPeerId); });
+        setTextMessage("");
+    };
 
-
-
+    const OnSendTextMessageComplete = (messageId, selectedUser) => {
+        setUsersData(prev => ({
+            ...prev,
+            [selectedUser]: prev[selectedUser].map(message =>
+                message.id === messageId
+                    ? { ...message, status: "sent" }
+                    : message
+            )
+        }));
+    };
 
     return (
         <Box sx={{ backgroundColor: '#f0f8ff' }}>
@@ -453,7 +481,56 @@ const MainPage = () => {
                                             </Box>
                                         </Box>
                                     )}
+                                    {message.type === "text" && message.status === "sending" && message.data.senderId === peerId && (
+                                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 1 }}>
+                                            <Box
+                                                sx={{
+                                                    padding: 1,
+                                                    borderRadius: 2,
+                                                    backgroundColor: '#673ab7',
+                                                    color: '#fff',
+                                                    maxWidth: '70%',
+                                                }}
+                                            >
+                                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                    <CircularProgress size={20} sx={{ marginRight: 1, color: "inherit" }} />
+                                                    {message.data.content}
+                                                </Box>
+                                            </Box>
+                                        </Box>
+                                    )}
 
+                                    {message.type === "text" && message.status === "sent" && message.data.senderId === peerId && (
+                                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 1 }}>
+                                            <Box
+                                                sx={{
+                                                    padding: 1,
+                                                    borderRadius: 2,
+                                                    backgroundColor: '#673ab7',
+                                                    color: '#fff',
+                                                    maxWidth: '70%',
+                                                }}
+                                            >
+                                                {message.data.content}
+                                            </Box>
+                                        </Box>
+                                    )}
+
+                                    {message.type === "text" && message.status === "sent" && message.data.senderId !== peerId && (
+                                        <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
+                                            <Avatar sx={{ width: 28, height: 28, marginRight: 1 }}></Avatar>
+                                            <Box
+                                                sx={{
+                                                    padding: 1,
+                                                    borderRadius: 2,
+                                                    backgroundColor: '#f1f1f1',
+                                                    maxWidth: '70%',
+                                                }}
+                                            >
+                                                {message.data.content}
+                                            </Box>
+                                        </Box>
+                                    )}
 
                                 </Box>
                             ))}
@@ -500,6 +577,8 @@ const MainPage = () => {
                                 variant="outlined"
                                 size="small"
                                 placeholder="Gửi tin nhắn"
+                                value={textMessage}
+                                onChange={(e) => setTextMessage(e.target.value)}
                                 sx={{
                                     marginRight: 1,
                                     flex: 1, // Chiếm 1 nửa không gian
@@ -512,7 +591,7 @@ const MainPage = () => {
                                     },
                                 }}
                             />
-                            <IconButton color="primary">
+                            <IconButton color="primary" onClick={handleSendTextMessage}>
                                 <SendIcon />
                             </IconButton>
                         </Box>
