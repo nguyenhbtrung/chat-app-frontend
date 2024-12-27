@@ -34,6 +34,7 @@ import { useNavigate } from 'react-router-dom';
 import OnlineUsers from './NewOnlineUsers';
 import { v4 as uuidv4 } from 'uuid';
 import FileList from './FileList';
+import VideoCall from './VideoCall';
 
 const MainPage = () => {
     const [token] = useState(sessionStorage.getItem("token"));
@@ -50,6 +51,7 @@ const MainPage = () => {
     const socketRef = useRef(null);
     const [peerId, setPeerId] = useState("");
     const [connectionRequest, setConnectionRequest] = useState(null);
+    const [videoCallRequest, setVideoCallRequest] = useState(null);
     const [connectionStatus, setConnectionStatus] = useState({});
 
     const OnReceivedMessage = (type, data, peerId) => {
@@ -100,13 +102,23 @@ const MainPage = () => {
             setConnectionRequest({ id: from, username: username });
         });
 
+        newSocket.on("request-video-call", ({ from, username }) => {
+            setVideoCallRequest({ id: from, username: username });
+        });
+
         newSocket.on("connection-accepted", ({ from }) => {
             handleConnectionAccepted(from);
         });
 
+        newSocket.on("video-call-accepted", ({ from }) => {
+            handleVideoCallAccepted(from);
+        });
+
+
         newSocket.on("connection-succesful", handleConnectionSuccessful);
         newSocket.on("peer-disconnected", handlePeerDisconnected);
         newSocket.on("connection-rejected", handleConnectionRejected);
+        newSocket.on("video-call-rejected", handleVideoCallRejected);
 
         return () => {
             console.log("Disconnecting socket...");
@@ -129,12 +141,35 @@ const MainPage = () => {
         setConnectionRequest(null); // Đóng dialog
     };
 
+    const handleAcceptVideoCall = () => {
+        if (!videoCallRequest) return;
+
+        socket.emit("video-call-accepted", { to: videoCallRequest.id });
+        setSelectedUser(videoCallRequest.id);
+        setSelectedUserData((prev) => ({
+            ...prev,
+            username: videoCallRequest.username,
+            id: videoCallRequest.id,
+        }));
+
+        setVideoCallRequest(null); // Đóng dialog
+        setIsVideoCall(true);
+    };
+
     const handleRejectConnection = () => {
         if (!connectionRequest) return;
 
-        socket.emit("connection-rejected", { to: connectionRequest });
+        socket.emit("connection-rejected", { to: connectionRequest.id });
 
         setConnectionRequest(null); // Đóng dialog
+    };
+
+    const handleRejectVideoCall = () => {
+        if (!videoCallRequest) return;
+
+        socket.emit("video-call-rejected", { to: videoCallRequest.id });
+
+        setVideoCallRequest(null); // Đóng dialog
     };
 
     const connectToPeer = (peerId) => {
@@ -147,6 +182,7 @@ const MainPage = () => {
         });
         sendOffer(peerId);
     }
+
 
     const handleLogout = () => {
         sessionStorage.removeItem("token");
@@ -263,6 +299,24 @@ const MainPage = () => {
         }));
     };
 
+    const [isVideoCall, setIsVideoCall] = useState(false);
+
+    const handleVideoCallClick = () => {
+        socket.emit("request-video-call", { peerId: selectedUser, requestUsername: username });
+    };
+
+    const handleVideoCallAccepted = () => {
+        setIsVideoCall(true);
+    };
+
+    const handleVideoCallRejected = () => {
+
+    };
+
+    const handleEndVideoCall = () => {
+        setIsVideoCall(false);
+    };
+
     return (
         <Box sx={{ backgroundColor: '#f0f8ff' }}>
             {/* AppBar */}
@@ -305,310 +359,279 @@ const MainPage = () => {
                 {/* Chat Section */}
                 <Grid item xs={8}>
                     <Paper elevation={3} sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: 4 }}>
-                        {/* Chat Header */}
-                        <Box
-                            sx={{
-                                padding: 2,
-                                borderBottom: '1px solid #ddd',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                            }}
-                        >
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                <Avatar sx={{ marginRight: 2 }}></Avatar>
-                                <Box>
-                                    <Typography variant="h6">{selectedUserData?.username}</Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        Peer Id: {selectedUser}
-                                    </Typography>
-                                </Box>
-                            </Box>
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                {connectionStatus[selectedUser] === "requesting" && (
-                                    <Alert severity="info" sx={{ marginRight: 2, padding: "2px 8px" }}>
-                                        Sending Request...
-                                    </Alert>
-                                )}
-                                {connectionStatus[selectedUser] === "connected" && (
-                                    <Alert severity="success" sx={{ marginRight: 2, padding: "2px 8px" }}>
-                                        Connected
-                                    </Alert>
-                                )}
+                        {isVideoCall ? (
+                            <VideoCall
+                                username={username}
+                                remoteUsername={selectedUserData?.username || 'Unknown User'}
+                                onEndCall={handleEndVideoCall}
+                            />
+                        ) : (
+                            <>
+                                {/* Chat Header */}
+                                <Box
+                                    sx={{
+                                        padding: 2,
+                                        borderBottom: '1px solid #ddd',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                    }}
+                                >
+                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                        <Avatar sx={{ marginRight: 2 }}></Avatar>
+                                        <Box>
+                                            <Typography variant="h6">{selectedUserData?.username}</Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                Peer Id: {selectedUser}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                        {connectionStatus[selectedUser] === "requesting" && (
+                                            <Alert severity="info" sx={{ marginRight: 2, padding: "2px 8px" }}>
+                                                Sending Request...
+                                            </Alert>
+                                        )}
+                                        {connectionStatus[selectedUser] === "connected" && (
+                                            <Alert severity="success" sx={{ marginRight: 2, padding: "2px 8px" }}>
+                                                Connected
+                                            </Alert>
+                                        )}
 
-                                {connectionStatus[selectedUser] !== "connected" && (
+                                        {connectionStatus[selectedUser] !== "connected" && (
+                                            <Button
+                                                variant="contained"
+                                                color="primary"
+                                                startIcon={<LinkIcon />}
+                                                onClick={() => handleConnectClick(selectedUser)}
+                                                disabled={connectionStatus[selectedUser] === "requesting" || !selectedUser}
+                                                sx={{ marginRight: 2 }}
+                                            >
+                                                Connect
+                                            </Button>
+                                        )}
+                                        {connectionStatus[selectedUser] === "connected" && (
+                                            <Button
+                                                variant="contained"
+                                                color="error"
+                                                onClick={() => handleDisconnectClick(selectedUser)}
+                                                sx={{ marginRight: 2 }}
+                                            >
+                                                Disconnect
+                                            </Button>
+                                        )}
+
+                                        <Button
+                                            variant="contained"
+                                            color="secondary"
+                                            disabled={!selectedUser}
+                                            startIcon={<VideocamIcon />}
+                                            onClick={handleVideoCallClick}
+                                        >
+                                            CALL VIDEO
+                                        </Button>
+                                    </Box>
+                                </Box>
+
+
+
+
+                                {/* Chat Messages */}
+                                <Box sx={{ flexGrow: 1, padding: 2, overflowY: 'auto', maxHeight: "365px" }}>
+                                    {usersData[selectedUser]?.map((message, index) => (
+                                        <Box key={index}>
+                                            {message.type === "file" && message.status === "sending" && message.data.senderId === peerId && (
+                                                <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 1 }}>
+                                                    <Box
+                                                        sx={{
+                                                            display: 'flex',
+                                                            flexDirection: 'column',
+                                                            alignItems: 'flex-end',
+                                                            padding: 1,
+                                                            borderRadius: 2,
+                                                            backgroundColor: '#673ab7',
+                                                            color: '#fff',
+                                                            maxWidth: '70%',
+                                                        }}
+                                                    >
+                                                        <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
+                                                            <InsertDriveFileIcon sx={{ marginRight: 1 }} />
+                                                            <strong>{message?.data?.name}</strong>
+                                                        </Box>
+                                                        <LinearProgress variant="determinate" value={progress} sx={{ width: '100%' }} />
+                                                    </Box>
+                                                </Box>
+                                            )}
+                                            {message.type === "file" && message.status === "sent" && message.data.senderId === peerId && (
+                                                <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 1 }}>
+                                                    <Box
+                                                        sx={{
+                                                            padding: 1,
+                                                            borderRadius: 2,
+                                                            backgroundColor: '#673ab7',
+                                                            color: '#fff',
+                                                            maxWidth: '70%',
+                                                        }}
+                                                    >
+                                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                            <InsertDriveFileIcon sx={{ marginRight: 1 }} />
+                                                            <a
+                                                                href={message?.data?.url}
+                                                                download={message?.data?.name}
+                                                                style={{ color: 'inherit', fontWeight: 'bold' }}
+                                                            >
+                                                                {message?.data?.name}
+                                                            </a>
+                                                        </Box>
+                                                    </Box>
+                                                </Box>
+                                            )}
+                                            {message.type === "file" && message.status === "sent" && message.data.senderId !== peerId && (
+                                                <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
+                                                    <Avatar sx={{ width: 28, height: 28, marginRight: 1 }}></Avatar>
+                                                    <Box
+                                                        sx={{
+                                                            padding: 1,
+                                                            borderRadius: 2,
+                                                            backgroundColor: '#f1f1f1',
+                                                            maxWidth: '70%',
+                                                        }}
+                                                    >
+                                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                            <InsertDriveFileIcon sx={{ marginRight: 1 }} />
+                                                            <a
+                                                                href={message?.data?.url}
+                                                                download={message?.data?.name}
+                                                                style={{ color: 'inherit', fontWeight: 'bold' }}
+                                                            >
+                                                                {message?.data?.name}
+                                                            </a>
+                                                        </Box>
+                                                    </Box>
+                                                </Box>
+                                            )}
+                                            {message.type === "text" && message.status === "sending" && message.data.senderId === peerId && (
+                                                <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 1 }}>
+                                                    <Box
+                                                        sx={{
+                                                            padding: 1,
+                                                            borderRadius: 2,
+                                                            backgroundColor: '#673ab7',
+                                                            color: '#fff',
+                                                            maxWidth: '70%',
+                                                        }}
+                                                    >
+                                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                            <CircularProgress size={20} sx={{ marginRight: 1, color: "inherit" }} />
+                                                            {message.data.content}
+                                                        </Box>
+                                                    </Box>
+                                                </Box>
+                                            )}
+
+                                            {message.type === "text" && message.status === "sent" && message.data.senderId === peerId && (
+                                                <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 1 }}>
+                                                    <Box
+                                                        sx={{
+                                                            padding: 1,
+                                                            borderRadius: 2,
+                                                            backgroundColor: '#673ab7',
+                                                            color: '#fff',
+                                                            maxWidth: '70%',
+                                                        }}
+                                                    >
+                                                        {message.data.content}
+                                                    </Box>
+                                                </Box>
+                                            )}
+
+                                            {message.type === "text" && message.status === "sent" && message.data.senderId !== peerId && (
+                                                <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
+                                                    <Avatar sx={{ width: 28, height: 28, marginRight: 1 }}></Avatar>
+                                                    <Box
+                                                        sx={{
+                                                            padding: 1,
+                                                            borderRadius: 2,
+                                                            backgroundColor: '#f1f1f1',
+                                                            maxWidth: '70%',
+                                                        }}
+                                                    >
+                                                        {message.data.content}
+                                                    </Box>
+                                                </Box>
+                                            )}
+
+                                        </Box>
+                                    ))}
+
+
+
+                                </Box>
+
+                                {/* Chat Input */}
+                                <Box
+                                    sx={{
+                                        padding: 2,
+                                        borderTop: '1px solid #ddd',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                    }}
+                                >
+                                    <TextField
+                                        type="file"
+                                        variant="outlined"
+                                        size="small"
+                                        onChange={(e) => setFile(e.target.files[0])}
+                                        sx={{
+                                            marginRight: 1,
+                                            flex: 1, // Chiếm 1 nửa không gian
+                                        }}
+                                    />
                                     <Button
                                         variant="contained"
                                         color="primary"
-                                        startIcon={<LinkIcon />}
-                                        onClick={() => handleConnectClick(selectedUser)}
-                                        disabled={connectionStatus[selectedUser] === "requesting" || !selectedUser}
-                                        sx={{ marginRight: 2 }}
+                                        onClick={handleSendFile}
+                                        disabled={connectionStatus[selectedUser] !== "connected" || (progress > 0 && progress < 100)}
+                                        sx={{
+                                            marginRight: 1,
+                                            whiteSpace: 'nowrap', // Đảm bảo nội dung không xuống dòng
+                                            minWidth: 'auto',     // Điều chỉnh kích thước tối thiểu của nút
+                                            padding: '6px 12px',  // Điều chỉnh padding nếu cần
+                                        }}
                                     >
-                                        Connect
+                                        Send File
                                     </Button>
-                                )}
-                                {connectionStatus[selectedUser] === "connected" && (
-                                    <Button
-                                        variant="contained"
-                                        color="error"
-                                        onClick={() => handleDisconnectClick(selectedUser)}
-                                        sx={{ marginRight: 2 }}
+                                    <TextField
+                                        fullWidth
+                                        variant="outlined"
+                                        size="small"
+                                        placeholder="Gửi tin nhắn"
+                                        value={textMessage}
+                                        onChange={(e) => setTextMessage(e.target.value)}
+                                        sx={{
+                                            marginRight: 1,
+                                            flex: 1, // Chiếm 1 nửa không gian
+                                        }}
+                                        slotProps={{
+                                            input: {
+                                                sx: {
+                                                    borderRadius: 8, // điều chỉnh mức độ bo tròn
+                                                },
+                                            },
+                                        }}
+                                    />
+                                    <IconButton
+                                        color="primary"
+                                        disabled={connectionStatus[selectedUser] !== "connected"}
+                                        onClick={handleSendTextMessage}
                                     >
-                                        Disconnect
-                                    </Button>
-                                )}
-
-                                <Button
-                                    variant="contained"
-                                    color="secondary"
-                                    disabled={!selectedUser}
-                                    startIcon={<VideocamIcon />}
-                                >
-                                    CALL VIDEO
-                                </Button>
-                            </Box>
-                        </Box>
-
-
-
-
-                        {/* Chat Messages */}
-                        <Box sx={{ flexGrow: 1, padding: 2, overflowY: 'auto', maxHeight: "365px" }}>
-
-                            <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
-                                <Avatar sx={{ width: 28, height: 28, marginRight: 1 }}></Avatar>
-                                <Box
-                                    sx={{
-                                        padding: 1,
-                                        borderRadius: 2,
-                                        backgroundColor: '#f1f1f1',
-                                        maxWidth: '70%',
-                                    }}
-                                >
-                                    hello
+                                        <SendIcon />
+                                    </IconButton>
                                 </Box>
-                            </Box>
-
-                            <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
-                                <Avatar sx={{ width: 28, height: 28, marginRight: 1 }}></Avatar>
-                                <Box
-                                    sx={{
-                                        padding: 1,
-                                        borderRadius: 2,
-                                        backgroundColor: '#f1f1f1',
-                                        maxWidth: '70%',
-                                    }}
-                                >
-                                    how are you
-                                </Box>
-                            </Box>
-                            <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 1 }}>
-                                <Box
-                                    sx={{
-                                        padding: 1,
-                                        borderRadius: 2,
-                                        backgroundColor: '#673ab7',
-                                        color: '#fff',
-                                        maxWidth: '70%',
-                                    }}
-                                >
-                                    hello
-                                </Box>
-                            </Box>
+                            </>
+                        )}
 
 
-
-                            {usersData[selectedUser]?.map((message, index) => (
-                                <Box key={index}>
-                                    {message.type === "file" && message.status === "sending" && message.data.senderId === peerId && (
-                                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 1 }}>
-                                            <Box
-                                                sx={{
-                                                    display: 'flex',
-                                                    flexDirection: 'column',
-                                                    alignItems: 'flex-end',
-                                                    padding: 1,
-                                                    borderRadius: 2,
-                                                    backgroundColor: '#673ab7',
-                                                    color: '#fff',
-                                                    maxWidth: '70%',
-                                                }}
-                                            >
-                                                <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
-                                                    <InsertDriveFileIcon sx={{ marginRight: 1 }} />
-                                                    <strong>{message?.data?.name}</strong>
-                                                </Box>
-                                                <LinearProgress variant="determinate" value={progress} sx={{ width: '100%' }} />
-                                            </Box>
-                                        </Box>
-                                    )}
-                                    {message.type === "file" && message.status === "sent" && message.data.senderId === peerId && (
-                                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 1 }}>
-                                            <Box
-                                                sx={{
-                                                    padding: 1,
-                                                    borderRadius: 2,
-                                                    backgroundColor: '#673ab7',
-                                                    color: '#fff',
-                                                    maxWidth: '70%',
-                                                }}
-                                            >
-                                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                    <InsertDriveFileIcon sx={{ marginRight: 1 }} />
-                                                    <a
-                                                        href={message?.data?.url}
-                                                        download={message?.data?.name}
-                                                        style={{ color: 'inherit', fontWeight: 'bold' }}
-                                                    >
-                                                        {message?.data?.name}
-                                                    </a>
-                                                </Box>
-                                            </Box>
-                                        </Box>
-                                    )}
-                                    {message.type === "file" && message.status === "sent" && message.data.senderId !== peerId && (
-                                        <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
-                                            <Avatar sx={{ width: 28, height: 28, marginRight: 1 }}></Avatar>
-                                            <Box
-                                                sx={{
-                                                    padding: 1,
-                                                    borderRadius: 2,
-                                                    backgroundColor: '#f1f1f1',
-                                                    maxWidth: '70%',
-                                                }}
-                                            >
-                                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                    <InsertDriveFileIcon sx={{ marginRight: 1 }} />
-                                                    <a
-                                                        href={message?.data?.url}
-                                                        download={message?.data?.name}
-                                                        style={{ color: 'inherit', fontWeight: 'bold' }}
-                                                    >
-                                                        {message?.data?.name}
-                                                    </a>
-                                                </Box>
-                                            </Box>
-                                        </Box>
-                                    )}
-                                    {message.type === "text" && message.status === "sending" && message.data.senderId === peerId && (
-                                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 1 }}>
-                                            <Box
-                                                sx={{
-                                                    padding: 1,
-                                                    borderRadius: 2,
-                                                    backgroundColor: '#673ab7',
-                                                    color: '#fff',
-                                                    maxWidth: '70%',
-                                                }}
-                                            >
-                                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                    <CircularProgress size={20} sx={{ marginRight: 1, color: "inherit" }} />
-                                                    {message.data.content}
-                                                </Box>
-                                            </Box>
-                                        </Box>
-                                    )}
-
-                                    {message.type === "text" && message.status === "sent" && message.data.senderId === peerId && (
-                                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 1 }}>
-                                            <Box
-                                                sx={{
-                                                    padding: 1,
-                                                    borderRadius: 2,
-                                                    backgroundColor: '#673ab7',
-                                                    color: '#fff',
-                                                    maxWidth: '70%',
-                                                }}
-                                            >
-                                                {message.data.content}
-                                            </Box>
-                                        </Box>
-                                    )}
-
-                                    {message.type === "text" && message.status === "sent" && message.data.senderId !== peerId && (
-                                        <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
-                                            <Avatar sx={{ width: 28, height: 28, marginRight: 1 }}></Avatar>
-                                            <Box
-                                                sx={{
-                                                    padding: 1,
-                                                    borderRadius: 2,
-                                                    backgroundColor: '#f1f1f1',
-                                                    maxWidth: '70%',
-                                                }}
-                                            >
-                                                {message.data.content}
-                                            </Box>
-                                        </Box>
-                                    )}
-
-                                </Box>
-                            ))}
-
-
-
-                        </Box>
-
-                        {/* Chat Input */}
-                        <Box
-                            sx={{
-                                padding: 2,
-                                borderTop: '1px solid #ddd',
-                                display: 'flex',
-                                alignItems: 'center',
-                            }}
-                        >
-                            <TextField
-                                type="file"
-                                variant="outlined"
-                                size="small"
-                                onChange={(e) => setFile(e.target.files[0])}
-                                sx={{
-                                    marginRight: 1,
-                                    flex: 1, // Chiếm 1 nửa không gian
-                                }}
-                            />
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={handleSendFile}
-                                disabled={connectionStatus[selectedUser] !== "connected" || (progress > 0 && progress < 100)}
-                                sx={{
-                                    marginRight: 1,
-                                    whiteSpace: 'nowrap', // Đảm bảo nội dung không xuống dòng
-                                    minWidth: 'auto',     // Điều chỉnh kích thước tối thiểu của nút
-                                    padding: '6px 12px',  // Điều chỉnh padding nếu cần
-                                }}
-                            >
-                                Send File
-                            </Button>
-                            <TextField
-                                fullWidth
-                                variant="outlined"
-                                size="small"
-                                placeholder="Gửi tin nhắn"
-                                value={textMessage}
-                                onChange={(e) => setTextMessage(e.target.value)}
-                                sx={{
-                                    marginRight: 1,
-                                    flex: 1, // Chiếm 1 nửa không gian
-                                }}
-                                slotProps={{
-                                    input: {
-                                        sx: {
-                                            borderRadius: 8, // điều chỉnh mức độ bo tròn
-                                        },
-                                    },
-                                }}
-                            />
-                            <IconButton
-                                color="primary"
-                                disabled={connectionStatus[selectedUser] !== "connected"}
-                                onClick={handleSendTextMessage}
-                            >
-                                <SendIcon />
-                            </IconButton>
-                        </Box>
 
                     </Paper>
                 </Grid>
@@ -624,6 +647,23 @@ const MainPage = () => {
                             Reject
                         </Button>
                         <Button onClick={handleAcceptConnection} color="primary">
+                            Accept
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+
+                <Dialog open={!!videoCallRequest} onClose={handleRejectVideoCall}>
+                    <DialogTitle>Video Call Request</DialogTitle>
+                    <DialogContent>
+                        <Typography>
+                            User <strong>{videoCallRequest?.username}</strong> with Peer ID <strong>{videoCallRequest?.id}</strong> wants to call video.
+                        </Typography>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleRejectVideoCall} color="secondary">
+                            Reject
+                        </Button>
+                        <Button onClick={handleAcceptVideoCall} color="primary">
                             Accept
                         </Button>
                     </DialogActions>
