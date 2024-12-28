@@ -52,6 +52,7 @@ const MainPage = () => {
     const [remoteStream, setRemoteStream] = useState(null);
     const [isAddTrack, setIsAddTrack] = useState(false);
     const [isVideoCall, setIsVideoCall] = useState(false);
+    const [isRequestingCallVideo, setIsRequestingCallVideo] = useState(false);
 
     const OnReceivedMessage = (type, data, peerId) => {
         const uniqueId = uuidv4();
@@ -154,6 +155,7 @@ const MainPage = () => {
         setVideoCallRequest(null);
         setRenegotiate(false);
         setIsAddTrack(false);
+        setIsRequestingCallVideo(false);
         setIsVideoCall(true);
     };
 
@@ -235,7 +237,8 @@ const MainPage = () => {
     };
 
     const handleDisconnectClick = (id) => {
-
+        peerRef.current.close();
+        socket.emit("peer-disconnected", { remote: peerRef.current.remotePeerId })
     };
 
     const handleSendFile = () => {
@@ -299,12 +302,14 @@ const MainPage = () => {
     };
 
     const handleVideoCallClick = () => {
+        setIsRequestingCallVideo(true);
         socket.emit("request-video-call", { peerId: selectedUser, requestUsername: username });
     };
 
     const handleVideoCallAccepted = (from) => {
         setRenegotiate(true);
         setIsAddTrack(false);
+        setIsRequestingCallVideo(false);
         setIsVideoCall(true);
     };
 
@@ -393,6 +398,11 @@ const MainPage = () => {
                                                 Sending Request...
                                             </Alert>
                                         )}
+                                        {isRequestingCallVideo && (
+                                            <Alert severity="info" sx={{ marginRight: 2, padding: "2px 8px" }}>
+                                                Calling...
+                                            </Alert>
+                                        )}
                                         {connectionStatus[selectedUser] === "connected" && (
                                             <Alert severity="success" sx={{ marginRight: 2, padding: "2px 8px" }}>
                                                 Connected
@@ -425,7 +435,7 @@ const MainPage = () => {
                                         <Button
                                             variant="contained"
                                             color="secondary"
-                                            disabled={!selectedUser}
+                                            disabled={connectionStatus[selectedUser] !== "connected" || isRequestingCallVideo}
                                             startIcon={<VideocamIcon />}
                                             onClick={handleVideoCallClick}
                                         >
