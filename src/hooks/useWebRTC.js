@@ -1,26 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 
-const useWebRTC = (socket, OnReceivedMessage) => {
+const useWebRTC = (socket, OnReceivedMessage, onRemoteStream) => {
     const peerRef = useRef();
     const dataChannelRef = useRef();
     const [receivedFiles, setReceivedFiles] = useState([]);
     const [progress, setProgress] = useState(0);
+    const [renegotiate, setRenegotiate] = useState(false);
 
-    useEffect(() => {
-        console.log("socket", socket.current);
-    }, [socket]);
-
-    const CheckSocket = (count) => {
-        console.log(`socketWebRTC${count}`, socket.current);
-    };
-
-    const createPeerConnection = (onDataReceived) => {
+    const createPeerConnection = () => {
         if (peerRef.current) {
             peerRef.current.close();
             socket.current.emit("peer-disconnected", { remote: peerRef.current.remotePeerId })
         }
 
         peerRef.current = new RTCPeerConnection();
+
+        // Thêm các transceiver
+        peerRef.current.addTransceiver("audio", { direction: "sendrecv" });
+        peerRef.current.addTransceiver("video", { direction: "sendrecv" });
 
         peerRef.current.ondatachannel = (event) => {
             const channel = event.channel;
@@ -81,15 +78,37 @@ const useWebRTC = (socket, OnReceivedMessage) => {
                 }
             }
         };
+
+        peerRef.current.ontrack = (event) => {
+            if (onRemoteStream) {
+                onRemoteStream(event.streams[0]);
+            }
+        };
+    };
+
+    const addLocalTracks = async (stream) => {
+        // stream.getTracks().forEach(track => {
+        //     peerRef.current.addTrack(track, stream);
+        // });
+        stream.getTracks().forEach((track) => {
+            const sender = peerRef.current.getSenders().find((s) => s.track?.kind === track.kind);
+            if (sender) {
+                sender.replaceTrack(track);
+            } else {
+                peerRef.current.addTrack(track, stream);
+            }
+        });
+
+        if (renegotiate)
+            SendRenegotiateOffer();
+
     };
 
     const sendOffer = async (to) => {
         console.log("Send offer");
 
-        // if (!dataChannelRef.current) {
         const dataChannel = peerRef.current.createDataChannel("fileTransfer");
         dataChannelRef.current = dataChannel;
-        // }
 
         peerRef.current.remotePeerId = to;
         const offer = await peerRef.current.createOffer();
@@ -99,11 +118,9 @@ const useWebRTC = (socket, OnReceivedMessage) => {
     };
 
     const handleOffer = async (offer, from) => {
-        // if (!peerRef.current) {
         createPeerConnection();
         const dataChannel = peerRef.current.createDataChannel("fileTransfer");
         dataChannelRef.current = dataChannel;
-        // }
 
         peerRef.current.remotePeerId = from;
         await peerRef.current.setRemoteDescription(new RTCSessionDescription(offer));
@@ -129,7 +146,80 @@ const useWebRTC = (socket, OnReceivedMessage) => {
         socketObj.on("offer", ({ offer, from }) => handleOffer(offer, from));
         socketObj.on("answer", ({ answer }) => handleAnswer(answer));
         socketObj.on("candidate", ({ candidate }) => handleCandidate(candidate));
+
+        socketObj.on("renegotiate-offer", ({ offer, from }) => handleRenegotiateOffer(offer, from));
+        socketObj.on("renegotiate-answer", ({ answer }) => handleRenegotiateAnswer(answer));
+
     }, [socket.current]);
+
+    const SendRenegotiateOffer = (() => {
+        let lastCall = 0; // Lưu thời gian gọi cuối cùng
+        const throttleTime = 1000; // Giới hạn mỗi 1 giây
+
+        return async () => {
+            const now = Date.now();
+
+            if (now - lastCall < throttleTime) {
+                console.log("Throttled: Too soon to send another offer");
+                return;
+            }
+
+            lastCall = now; // Cập nhật thời gian gọi
+            console.log("send offer");
+
+            try {
+                const offer = await peerRef.current.createOffer();
+                await peerRef.current.setLocalDescription(offer);
+
+                socket.current.emit("renegotiate-offer", { offer, to: peerRef.current.remotePeerId });
+            } catch (error) {
+                console.error(error);
+            }
+        };
+    })();
+
+
+    const handleRenegotiateOffer = async (offer, from) => {
+        if (!peerRef.current) {
+            createPeerConnection();
+        }
+        try {
+            console.log("receive offer");
+            await peerRef.current.setRemoteDescription(new RTCSessionDescription(offer));
+            const answer = await peerRef.current.createAnswer();
+
+            if (peerRef.current.signalingState === "stable") {
+                console.error("Cannot set local description in stable state");
+                return;
+            }
+
+            await peerRef.current.setLocalDescription(answer);
+            console.log("send answer");
+            socket.current.emit("renegotiate-answer", { answer, to: from });
+        } catch (error) {
+            console.error(error);
+        }
+
+    };
+
+    const handleRenegotiateAnswer = async (answer) => {
+        if (!peerRef.current) {
+            console.error("Peer connection not established.");
+            return;
+        }
+        try {
+            console.log("receive answer");
+            if (peerRef.current.signalingState === "stable") {
+                console.error("Cannot set remote description in stable state");
+                return;
+            }
+
+            await peerRef.current.setRemoteDescription(new RTCSessionDescription(answer));
+        } catch (error) {
+            console.error(error)
+        }
+
+    };
 
     const sendTextMessage = (data, onComplete = () => { }) => {
         const dataChannel = dataChannelRef.current;
@@ -202,7 +292,7 @@ const useWebRTC = (socket, OnReceivedMessage) => {
 
 
 
-    return { createPeerConnection, sendOffer, sendFile, receivedFiles, progress, CheckSocket, sendTextMessage };
+    return { createPeerConnection, sendOffer, sendFile, receivedFiles, progress, sendTextMessage, peerRef, addLocalTracks, setRenegotiate };
 };
 
 export default useWebRTC;

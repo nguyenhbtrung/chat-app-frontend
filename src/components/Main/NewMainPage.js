@@ -7,10 +7,6 @@ import {
     Box,
     Grid,
     Paper,
-    List,
-    ListItem,
-    ListItemAvatar,
-    ListItemText,
     Avatar,
     TextField,
     IconButton,
@@ -53,6 +49,9 @@ const MainPage = () => {
     const [connectionRequest, setConnectionRequest] = useState(null);
     const [videoCallRequest, setVideoCallRequest] = useState(null);
     const [connectionStatus, setConnectionStatus] = useState({});
+    const [remoteStream, setRemoteStream] = useState(null);
+    const [isAddTrack, setIsAddTrack] = useState(false);
+    const [isVideoCall, setIsVideoCall] = useState(false);
 
     const OnReceivedMessage = (type, data, peerId) => {
         const uniqueId = uuidv4();
@@ -66,7 +65,7 @@ const MainPage = () => {
 
     };
 
-    const { createPeerConnection, sendOffer, sendFile, receivedFiles, progress, CheckSocket, sendTextMessage } = useWebRTC(socketRef, OnReceivedMessage);
+    const { createPeerConnection, sendOffer, sendFile, receivedFiles, progress, sendTextMessage, peerRef, addLocalTracks, setRenegotiate } = useWebRTC(socketRef, OnReceivedMessage, setRemoteStream);
 
     useEffect(() => {
         const newSocket = io("http://localhost:8080");
@@ -138,7 +137,7 @@ const MainPage = () => {
             id: connectionRequest.id,
         }));
 
-        setConnectionRequest(null); // Đóng dialog
+        setConnectionRequest(null);
     };
 
     const handleAcceptVideoCall = () => {
@@ -152,7 +151,9 @@ const MainPage = () => {
             id: videoCallRequest.id,
         }));
 
-        setVideoCallRequest(null); // Đóng dialog
+        setVideoCallRequest(null);
+        setRenegotiate(false);
+        setIsAddTrack(false);
         setIsVideoCall(true);
     };
 
@@ -161,7 +162,7 @@ const MainPage = () => {
 
         socket.emit("connection-rejected", { to: connectionRequest.id });
 
-        setConnectionRequest(null); // Đóng dialog
+        setConnectionRequest(null);
     };
 
     const handleRejectVideoCall = () => {
@@ -169,7 +170,7 @@ const MainPage = () => {
 
         socket.emit("video-call-rejected", { to: videoCallRequest.id });
 
-        setVideoCallRequest(null); // Đóng dialog
+        setVideoCallRequest(null);
     };
 
     const connectToPeer = (peerId) => {
@@ -177,9 +178,7 @@ const MainPage = () => {
     };
 
     const handleConnectionAccepted = (peerId) => {
-        createPeerConnection((data) => {
-            console.log("Received file data:", data);
-        });
+        createPeerConnection();
         sendOffer(peerId);
     }
 
@@ -299,13 +298,13 @@ const MainPage = () => {
         }));
     };
 
-    const [isVideoCall, setIsVideoCall] = useState(false);
-
     const handleVideoCallClick = () => {
         socket.emit("request-video-call", { peerId: selectedUser, requestUsername: username });
     };
 
-    const handleVideoCallAccepted = () => {
+    const handleVideoCallAccepted = (from) => {
+        setRenegotiate(true);
+        setIsAddTrack(false);
         setIsVideoCall(true);
     };
 
@@ -361,9 +360,11 @@ const MainPage = () => {
                     <Paper elevation={3} sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: 4 }}>
                         {isVideoCall ? (
                             <VideoCall
-                                username={username}
+                                isAddTrack={isAddTrack}
                                 remoteUsername={selectedUserData?.username || 'Unknown User'}
                                 onEndCall={handleEndVideoCall}
+                                remoteStream={remoteStream}
+                                addLocalTracks={addLocalTracks}
                             />
                         ) : (
                             <>

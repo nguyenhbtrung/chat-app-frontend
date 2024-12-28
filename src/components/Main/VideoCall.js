@@ -1,18 +1,37 @@
 import React, { useEffect, useRef } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 
-const VideoCall = ({ username, remoteUsername, onEndCall }) => {
+const VideoCall = ({ isAddTrack, remoteUsername, onEndCall, remoteStream, addLocalTracks }) => {
     const userVideoRef = useRef(null);
+    const remoteVideoRef = useRef(null);
 
     useEffect(() => {
-        navigator.mediaDevices.getUserMedia({ video: true })
+        if (isAddTrack) return;
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             .then(stream => {
                 userVideoRef.current.srcObject = stream;
+                isAddTrack = true;
+                addLocalTracks(stream);
             })
             .catch(err => {
                 console.error("Error accessing user media: ", err);
             });
     }, []);
+
+    useEffect(() => {
+        if (remoteStream) {
+            remoteVideoRef.current.srcObject = remoteStream;
+        }
+    }, [remoteStream]);
+
+    const handleEndCall = () => {
+        if (userVideoRef.current && userVideoRef.current.srcObject) {
+            const tracks = userVideoRef.current.srcObject.getTracks();
+            tracks.forEach(track => track.stop());
+        }
+
+        if (onEndCall) onEndCall();
+    };
 
     return (
         <Box
@@ -32,7 +51,7 @@ const VideoCall = ({ username, remoteUsername, onEndCall }) => {
                     display: 'flex',
                     justifyContent: 'space-between',
                     width: '80%',
-                    height: '50%',
+                    height: '60%',
                     backgroundColor: '#000',
                     borderRadius: 4,
                 }}
@@ -48,7 +67,7 @@ const VideoCall = ({ username, remoteUsername, onEndCall }) => {
                         alignItems: 'center',
                     }}
                 >
-                    <video ref={userVideoRef} autoPlay style={{ width: '95%', height: '95%', borderRadius: '4px' }} />
+                    <video ref={userVideoRef} autoPlay style={{ width: '100%', height: '100%', borderRadius: '4px' }} />
                 </Box>
                 <Box
                     sx={{
@@ -61,14 +80,14 @@ const VideoCall = ({ username, remoteUsername, onEndCall }) => {
                         alignItems: 'center',
                     }}
                 >
-                    <Typography color="white">{remoteUsername}'s Video Stream</Typography>
+                    <video ref={remoteVideoRef} autoPlay style={{ width: '100%', height: '100%', borderRadius: '4px' }} />
                 </Box>
             </Box>
             <Button
                 variant="contained"
                 color="error"
                 sx={{ marginTop: 2 }}
-                onClick={onEndCall}
+                onClick={handleEndCall}
             >
                 End Call
             </Button>
