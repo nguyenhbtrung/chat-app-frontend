@@ -6,6 +6,7 @@ const useWebRTC = (socket, OnReceivedMessage, onRemoteStream) => {
     const [receivedFiles, setReceivedFiles] = useState([]);
     const [progress, setProgress] = useState(0);
     const [renegotiate, setRenegotiate] = useState(false);
+    const remoteStreamRef = useRef();
 
     const createPeerConnection = () => {
         if (peerRef.current) {
@@ -80,7 +81,9 @@ const useWebRTC = (socket, OnReceivedMessage, onRemoteStream) => {
         };
 
         peerRef.current.ontrack = (event) => {
+            console.log("on track fire");
             if (onRemoteStream) {
+                remoteStreamRef.current = event.streams[0];
                 onRemoteStream(event.streams[0]);
             }
         };
@@ -100,7 +103,11 @@ const useWebRTC = (socket, OnReceivedMessage, onRemoteStream) => {
         });
 
         if (renegotiate)
-            SendRenegotiateOffer();
+            // SendRenegotiateOffer();
+            setTimeout(() => {
+                console.log("recall SendRenegotiateOffer");
+                SendRenegotiateOffer();
+            }, 1000);
 
     };
 
@@ -208,7 +215,7 @@ const useWebRTC = (socket, OnReceivedMessage, onRemoteStream) => {
             return;
         }
         try {
-            console.log("receive answer");
+
             if (peerRef.current.signalingState === "stable") {
                 console.error("Cannot set remote description in stable state");
                 return;
@@ -218,7 +225,14 @@ const useWebRTC = (socket, OnReceivedMessage, onRemoteStream) => {
         } catch (error) {
             console.error(error)
         }
-
+        console.log("receive answer");
+        console.log("remote stream ref", remoteStreamRef.current);
+        // if (!remoteStreamRef.current) {
+        //     setTimeout(() => {
+        //         console.log("recall SendRenegotiateOffer");
+        //         SendRenegotiateOffer();
+        //     }, 1000);
+        // }
     };
 
     const sendTextMessage = (data, onComplete = () => { }) => {
