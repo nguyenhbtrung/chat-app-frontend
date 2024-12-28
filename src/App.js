@@ -17,9 +17,9 @@ const App = () => {
         {/* Trang chính */}
         <Route
           path="/"
-          element={isAuthenticated ? <OldMainPage /> : <Navigate to="/login" />}
+          element={isAuthenticated ? <MainPage /> : <Navigate to="/login" />}
         />
-        <Route path="/mp" element={<MainPage />} />
+        <Route path="/mp" element={<OldMainPage />} />
 
         {/* Điều hướng cho đường dẫn không hợp lệ */}
         <Route path="*" element={<Navigate to={isAuthenticated ? "/" : "/login"} />} />
