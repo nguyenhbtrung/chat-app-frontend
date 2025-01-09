@@ -69,7 +69,7 @@ const MainPage = () => {
     const { createPeerConnection, sendOffer, sendFile, receivedFiles, progress, sendTextMessage, peerRef, addLocalTracks, setRenegotiate } = useWebRTC(socketRef, OnReceivedMessage, setRemoteStream);
 
     useEffect(() => {
-        const newSocket = io("http://localhost:8080");
+        const newSocket = io(process.env.REACT_APP_BACKEND);
         socketRef.current = newSocket;
         setSocket(newSocket);
 
