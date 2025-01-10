@@ -14,7 +14,16 @@ const useWebRTC = (socket, OnReceivedMessage, onRemoteStream) => {
             socket.current.emit("peer-disconnected", { remote: peerRef.current.remotePeerId })
         }
 
-        peerRef.current = new RTCPeerConnection();
+        peerRef.current = new RTCPeerConnection({
+            iceServers: [
+                { urls: "stun:stun.l.google.com:19302" }, // STUN server miễn phí
+                {
+                    urls: "turn:your-turn-server:3478", // TURN server
+                    username: "your-username",
+                    credential: "your-password"
+                }
+            ],
+        });
 
         // Thêm các transceiver
         peerRef.current.addTransceiver("audio", { direction: "sendrecv" });
