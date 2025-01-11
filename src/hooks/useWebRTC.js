@@ -135,7 +135,7 @@ const useWebRTC = (socket, OnReceivedMessage, onRemoteStream) => {
     };
 
     const handleOffer = async (offer, from) => {
-        createPeerConnection();
+        await createPeerConnection();
         const dataChannel = peerRef.current.createDataChannel("fileTransfer");
         dataChannelRef.current = dataChannel;
 
@@ -198,7 +198,7 @@ const useWebRTC = (socket, OnReceivedMessage, onRemoteStream) => {
 
     const handleRenegotiateOffer = async (offer, from) => {
         if (!peerRef.current) {
-            createPeerConnection();
+            await createPeerConnection();
         }
         try {
             console.log("receive offer");
