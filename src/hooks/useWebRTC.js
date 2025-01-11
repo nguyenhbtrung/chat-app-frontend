@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { getIceServers } from "../services/iceServers";
 
 const useWebRTC = (socket, OnReceivedMessage, onRemoteStream) => {
     const peerRef = useRef();
@@ -9,18 +8,18 @@ const useWebRTC = (socket, OnReceivedMessage, onRemoteStream) => {
     const [renegotiate, setRenegotiate] = useState(false);
     const remoteStreamRef = useRef();
 
-    const createPeerConnection = async () => {
+    const createPeerConnection = () => {
         if (peerRef.current) {
             peerRef.current.close();
             socket.current.emit("peer-disconnected", { remote: peerRef.current.remotePeerId })
         }
 
-        const iceServers = await getIceServers();
-
         const servers = {
-            iceServers: iceServers.length
-                ? iceServers
-                : [{ urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"] }],
+            iceServers: [
+                {
+                    urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'],
+                },
+            ],
             iceCandidatePoolSize: 10,
         };
 
@@ -135,7 +134,7 @@ const useWebRTC = (socket, OnReceivedMessage, onRemoteStream) => {
     };
 
     const handleOffer = async (offer, from) => {
-        await createPeerConnection();
+        createPeerConnection();
         const dataChannel = peerRef.current.createDataChannel("fileTransfer");
         dataChannelRef.current = dataChannel;
 
@@ -198,7 +197,7 @@ const useWebRTC = (socket, OnReceivedMessage, onRemoteStream) => {
 
     const handleRenegotiateOffer = async (offer, from) => {
         if (!peerRef.current) {
-            await createPeerConnection();
+            createPeerConnection();
         }
         try {
             console.log("receive offer");

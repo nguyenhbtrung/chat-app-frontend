@@ -179,8 +179,8 @@ const MainPage = () => {
         socket.emit("request-connection", { peerId, requestUsername: username });
     };
 
-    const handleConnectionAccepted = async (peerId) => {
-        await createPeerConnection();
+    const handleConnectionAccepted = (peerId) => {
+        createPeerConnection();
         sendOffer(peerId);
     }
 
