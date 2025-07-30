@@ -10,16 +10,36 @@ import { Visibility, VisibilityOff, Person, Lock } from '@mui/icons-material';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import AuthLayout from '../components/AuthLayout';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { loginSchema } from 'chat-app-zod-schema';
 
 export default function SignIn() {
     const [showPassword, setShowPassword] = useState(false);
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm({
+        resolver: zodResolver(loginSchema),
+    });
+
+    const onSubmit = (data) => {
+        console.log('Form submitted:', data);
+    };
 
     return (
         <AuthLayout
             title="Sign In"
             subtitle="Ready to start chatting and video calling?"
         >
-            <Box component="form" noValidate autoComplete="off">
+            <Box
+                component="form"
+                noValidate
+                autoComplete="off"
+                onSubmit={handleSubmit(onSubmit)}
+            >
                 <TextField
                     fullWidth
                     margin="normal"
@@ -34,6 +54,9 @@ export default function SignIn() {
                             ),
                         }
                     }}
+                    {...register('userName')}
+                    error={!!errors.userName}
+                    helperText={errors.userName?.message}
                 />
 
                 <TextField
@@ -61,6 +84,9 @@ export default function SignIn() {
                             ),
                         }
                     }}
+                    {...register('password')}
+                    error={!!errors.password}
+                    helperText={errors.password?.message}
                 />
 
                 <Box textAlign="right" mt={1} mb={3}>
@@ -76,6 +102,7 @@ export default function SignIn() {
                     variant="contained"
                     size="large"
                     sx={{ borderRadius: 2, mb: 2 }}
+                    type="submit"
                 >
                     Sign in
                 </Button>

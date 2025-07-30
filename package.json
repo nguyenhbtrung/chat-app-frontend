@@ -12,14 +12,18 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@hookform/resolvers": "^5.2.1",
     "@mui/icons-material": "^7.2.0",
     "@mui/material": "^7.2.0",
     "axios": "^1.11.0",
+    "chat-app-zod-schema": "https://github.com/nguyenhbtrung/chat-app-zod-schema.git#main",
     "dotenv": "^17.2.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-hook-form": "^7.61.1",
     "react-router-dom": "^7.7.1",
-    "socket.io-client": "^4.8.1"
+    "socket.io-client": "^4.8.1",
+    "zod": "^4.0.13"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",

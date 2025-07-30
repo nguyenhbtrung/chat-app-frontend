@@ -16,17 +16,37 @@ import {
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import AuthLayout from '../components/AuthLayout';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { registerSchema } from '../schemas/extendedRegisterSchema';
 
 export default function SignUp() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm({
+        resolver: zodResolver(registerSchema),
+    });
+
+    const onSubmit = (data) => {
+        console.log('Form submitted:', data);
+    };
 
     return (
         <AuthLayout
             title="Sign Up"
             subtitle="Just a few seconds to connect with your friends!"
         >
-            <Box component="form" noValidate autoComplete="off">
+            <Box
+                component="form"
+                noValidate
+                autoComplete="off"
+                onSubmit={handleSubmit(onSubmit)}
+            >
                 <TextField
                     fullWidth
                     margin="normal"
@@ -41,6 +61,9 @@ export default function SignUp() {
                             ),
                         }
                     }}
+                    {...register('userName')}
+                    error={!!errors.userName}
+                    helperText={errors.userName?.message}
                 />
 
                 <TextField
@@ -57,6 +80,9 @@ export default function SignUp() {
                             ),
                         }
                     }}
+                    {...register('email')}
+                    error={!!errors.email}
+                    helperText={errors.email?.message}
                 />
 
                 <TextField
@@ -84,6 +110,9 @@ export default function SignUp() {
                             ),
                         }
                     }}
+                    {...register('password')}
+                    error={!!errors.password}
+                    helperText={errors.password?.message}
                 />
 
                 <TextField
@@ -111,6 +140,9 @@ export default function SignUp() {
                             ),
                         }
                     }}
+                    {...register('confirmPassword')}
+                    error={!!errors.confirmPassword}
+                    helperText={errors.confirmPassword?.message}
                 />
 
                 <Button
@@ -118,6 +150,7 @@ export default function SignUp() {
                     variant="contained"
                     size="large"
                     sx={{ borderRadius: 2, my: 2 }}
+                    type='submit'
                 >
                     Sign up
                 </Button>
