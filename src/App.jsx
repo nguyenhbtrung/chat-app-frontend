@@ -1,35 +1,36 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { ThemeProvider, CssBaseline, IconButton } from '@mui/material';
+import { BrowserRouter } from 'react-router-dom';
+import AppRoutes from './routes/AppRoutes';
+import { ThemeProviderContext, ThemeContext } from './context/ThemeContext';
+import { useContext } from 'react';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 
-function App() {
-  const [count, setCount] = useState(0)
+function AppContent() {
+  const { theme, toggleTheme, mode } = useContext(ThemeContext);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <div style={{ padding: 16 }}>
+        {/* <IconButton onClick={toggleTheme} color="inherit">
+          {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+        </IconButton> */}
+
+        <AppRoutes />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </ThemeProvider>
+  );
 }
 
-export default App
+function App() {
+  return (
+    <ThemeProviderContext>
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
+    </ThemeProviderContext>
+  );
+}
+
+export default App;
