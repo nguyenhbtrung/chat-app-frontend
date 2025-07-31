@@ -13,6 +13,9 @@ import AuthLayout from '../components/AuthLayout';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema } from 'chat-app-zod-schema';
+import { login } from '../services/authService';
+import { handleApiError } from '../utils/HandleApiError';
+import { toast } from 'react-toastify';
 
 export default function SignIn() {
     const [showPassword, setShowPassword] = useState(false);
@@ -25,8 +28,16 @@ export default function SignIn() {
         resolver: zodResolver(loginSchema),
     });
 
-    const onSubmit = (data) => {
-        console.log('Form submitted:', data);
+    const onSubmit = async (data) => {
+        try {
+            const res = await login(data);
+            console.log(">>>check login: ", res);
+            toast.success("Login successfully");
+        } catch (error) {
+            const { message } = handleApiError(error);
+            toast.error(message);
+        }
+
     };
 
     return (
