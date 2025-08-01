@@ -1,0 +1,9 @@
+{
+    "api": {
+        "INTERNAL_ERROR": "Something went wrong.",
+        "NETWORK_ERROR": "No response received from server",
+        "UNKNOWN_ERROR": "An unknown error occurred",
+        "INVALID_CREDENTIALS": "Incorrect username or password",
+        "server_error": "Server error. Please try again later."
+    }
+}
