@@ -16,10 +16,12 @@ import { loginSchema } from 'chat-app-zod-schema';
 import { login } from '../services/authService';
 import { toast } from 'react-toastify';
 import { useApiErrorHandler } from '../hooks/useApiErrorHandler';
+import { useTranslation } from 'react-i18next';
 
 export default function SignIn() {
     const [showPassword, setShowPassword] = useState(false);
     const { handleApiError } = useApiErrorHandler();
+    const { t } = useTranslation('auth');
 
     const {
         register,
@@ -42,8 +44,8 @@ export default function SignIn() {
 
     return (
         <AuthLayout
-            title="Sign In"
-            subtitle="Ready to start chatting and video calling?"
+            title={t('signIn.title')}
+            subtitle={t('signIn.subtitle')}
         >
             <Box
                 component="form"
@@ -54,7 +56,7 @@ export default function SignIn() {
                 <TextField
                     fullWidth
                     margin="normal"
-                    label="Username"
+                    label={t('signIn.username')}
                     variant="outlined"
                     slotProps={{
                         input: {
@@ -67,14 +69,14 @@ export default function SignIn() {
                     }}
                     {...register('userName')}
                     error={!!errors.userName}
-                    helperText={errors.userName?.message}
+                    helperText={errors.userName?.message && t(errors.userName.message, { ns: 'errors' })}
                 />
 
                 <TextField
                     fullWidth
                     margin="normal"
                     type={showPassword ? 'text' : 'password'}
-                    label="Password"
+                    label={t('signIn.password')}
                     variant="outlined"
                     slotProps={{
                         input: {
@@ -97,13 +99,13 @@ export default function SignIn() {
                     }}
                     {...register('password')}
                     error={!!errors.password}
-                    helperText={errors.password?.message}
+                    helperText={errors.password?.message && t(errors.password.message, { ns: 'errors' })}
                 />
 
                 <Box textAlign="right" mt={1} mb={3}>
                     <Typography variant="body2" fontWeight={500}>
                         <Link to="/forgot-password" style={{ textDecoration: 'none' }}>
-                            Forgot password ?
+                            {t('signIn.forgotPassword')}
                         </Link>
                     </Typography>
                 </Box>
@@ -115,16 +117,17 @@ export default function SignIn() {
                     sx={{ borderRadius: 2, mb: 2 }}
                     type="submit"
                 >
-                    Sign in
+                    {t('signIn.submit')}
                 </Button>
 
                 <Typography variant="body2" align="center">
-                    Don’t have an account?{' '}
+                    {t('signIn.noAccount')}{' '}
                     <Link to="/signup" style={{ fontWeight: 'bold' }}>
-                        Sign up
+                        {t('signIn.signUp')}
                     </Link>
                 </Typography>
             </Box>
         </AuthLayout>
     );
+
 }
