@@ -1,9 +1,17 @@
 {
     "api": {
-        "INTERNAL_ERROR": "Something went wrong.",
-        "NETWORK_ERROR": "No response received from server",
-        "UNKNOWN_ERROR": "An unknown error occurred",
-        "INVALID_CREDENTIALS": "Incorrect username or password",
-        "server_error": "Server error. Please try again later."
+        "errors": {
+            "INTERNAL_ERROR": "Something went wrong.",
+            "NETWORK_ERROR": "No response received from server",
+            "UNKNOWN_ERROR": "An unknown error occurred",
+            "INVALID_CREDENTIALS": "Incorrect username or password",
+            "server_error": "Server error. Please try again later.",
+            "DUPLICATE_EMAIL": "Email already exists",
+            "DUPLICATE_USERNAME": "Username already exists"
+        },
+        "success": {
+            "SIGN_IN": "Sign-in successfully",
+            "SIGN_UP": "Sign-up successfully"
+        }
     }
 }

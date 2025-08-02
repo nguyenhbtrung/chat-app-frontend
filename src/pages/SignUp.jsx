@@ -19,10 +19,16 @@ import AuthLayout from '../components/AuthLayout';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { registerSchema } from '../schemas/extendedRegisterSchema';
+import { register as registerUser } from '../services/authService';
+import { useApiErrorHandler } from '../hooks/useApiErrorHandler';
+import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 export default function SignUp() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
+    const { handleApiError } = useApiErrorHandler();
+    const { t } = useTranslation('auth');
 
     const {
         register,
@@ -32,14 +38,20 @@ export default function SignUp() {
         resolver: zodResolver(registerSchema),
     });
 
-    const onSubmit = (data) => {
-        console.log('Form submitted:', data);
+    const onSubmit = async (data) => {
+        try {
+            const res = await registerUser(data);
+            console.log(">>>Check register res: ", res?.data);
+            toast.success(t('api.success.SIGN_UP', { ns: 'api' }));
+        } catch (error) {
+            handleApiError(error);
+        }
     };
 
     return (
         <AuthLayout
-            title="Sign Up"
-            subtitle="Just a few seconds to connect with your friends!"
+            title={t('signUp.title')}
+            subtitle={t('signUp.subtitle')}
         >
             <Box
                 component="form"
@@ -50,7 +62,7 @@ export default function SignUp() {
                 <TextField
                     fullWidth
                     margin="normal"
-                    label="Username"
+                    label={t('signUp.username')}
                     variant="outlined"
                     slotProps={{
                         input: {
@@ -63,13 +75,13 @@ export default function SignUp() {
                     }}
                     {...register('userName')}
                     error={!!errors.userName}
-                    helperText={errors.userName?.message}
+                    helperText={errors.userName?.message && t(errors.userName.message, { ns: 'errors' })}
                 />
 
                 <TextField
                     fullWidth
                     margin="normal"
-                    label="Email"
+                    label={t('signUp.email')}
                     variant="outlined"
                     slotProps={{
                         input: {
@@ -82,13 +94,13 @@ export default function SignUp() {
                     }}
                     {...register('email')}
                     error={!!errors.email}
-                    helperText={errors.email?.message}
+                    helperText={errors.email?.message && t(errors.email.message, { ns: 'errors' })}
                 />
 
                 <TextField
                     fullWidth
                     margin="normal"
-                    label="Password"
+                    label={t('signUp.password')}
                     type={showPassword ? 'text' : 'password'}
                     variant="outlined"
                     slotProps={{
@@ -112,13 +124,13 @@ export default function SignUp() {
                     }}
                     {...register('password')}
                     error={!!errors.password}
-                    helperText={errors.password?.message}
+                    helperText={errors.password?.message && t(errors.password.message, { ns: 'errors' })}
                 />
 
                 <TextField
                     fullWidth
                     margin="normal"
-                    label="Confirm Password"
+                    label={t('signUp.confirmPassword')}
                     type={showConfirm ? 'text' : 'password'}
                     variant="outlined"
                     slotProps={{
@@ -142,7 +154,7 @@ export default function SignUp() {
                     }}
                     {...register('confirmPassword')}
                     error={!!errors.confirmPassword}
-                    helperText={errors.confirmPassword?.message}
+                    helperText={errors.confirmPassword?.message && t(errors.confirmPassword.message, { ns: 'errors' })}
                 />
 
                 <Button
@@ -150,15 +162,15 @@ export default function SignUp() {
                     variant="contained"
                     size="large"
                     sx={{ borderRadius: 2, my: 2 }}
-                    type='submit'
+                    type="submit"
                 >
-                    Sign up
+                    {t('signUp.submit')}
                 </Button>
 
                 <Typography variant="body2" align="center">
-                    You already have an account?{' '}
+                    {t('signUp.haveAccount')}{' '}
                     <Link to="/signin" style={{ fontWeight: 'bold' }}>
-                        Sign in
+                        {t('signUp.signIn')}
                     </Link>
                 </Typography>
             </Box>

@@ -35,7 +35,7 @@ export default function SignIn() {
         try {
             const res = await login(data);
             console.log(">>>check login: ", res);
-            toast.success("Login successfully");
+            toast.success(t('api.success.SIGN_IN', { ns: 'api' }));
         } catch (error) {
             handleApiError(error);
         }

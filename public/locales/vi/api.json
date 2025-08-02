@@ -1,9 +1,17 @@
 {
     "api": {
-        "INTERNAL_ERROR": "Đã xảy ra lỗi.",
-        "NETWORK_ERROR": "Không nhận được phản hồi từ máy chủ",
-        "UNKNOWN_ERROR": "Đã xảy ra lỗi không xác định",
-        "INVALID_CREDENTIALS": "Tên đăng nhập hoặc mật khẩu không đúng",
-        "server_error": "Lỗi máy chủ. Vui lòng thử lại sau."
+        "errors": {
+            "INTERNAL_ERROR": "Đã xảy ra lỗi.",
+            "NETWORK_ERROR": "Không nhận được phản hồi từ máy chủ",
+            "UNKNOWN_ERROR": "Đã xảy ra lỗi không xác định",
+            "INVALID_CREDENTIALS": "Tên đăng nhập hoặc mật khẩu không đúng",
+            "server_error": "Lỗi máy chủ. Vui lòng thử lại sau.",
+            "DUPLICATE_EMAIL": "Email đã tồn tại",
+            "DUPLICATE_USERNAME": "Tên đăng nhập đã tồn tại"
+        },
+        "success": {
+            "SIGN_IN": "Đăng nhập thành công",
+            "SIGN_UP": "Đăng ký thành công"
+        }
     }
 }

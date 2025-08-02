@@ -14,7 +14,7 @@ export const useApiErrorHandler = () => {
                 code = 'NETWORK_ERROR';
             }
         }
-        toast.error(t(`api.${code}`, { defaultValue: t('api.UNKNOWN_ERROR') }));
+        toast.error(t(`api.errors.${code}`, { defaultValue: t('api.errors.UNKNOWN_ERROR') }));
     };
 
     return { handleApiError };
