@@ -9,7 +9,7 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(config => {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem(ACCESS_TOKEN_KEY_NAME);
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
@@ -23,7 +23,7 @@ api.interceptors.response.use(
     error => {
         const { status } = error.response || {};
         if (status === 401) {
-            localStorage.removeItem('accessToken');
+            localStorage.removeItem(ACCESS_TOKEN_KEY_NAME);
             window.location.href = '/signin';
         }
         return Promise.reject(error);
