@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { ACCESS_TOKEN_KEY_NAME } from '../../constants';
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_BACKEND_BASE_URL,
