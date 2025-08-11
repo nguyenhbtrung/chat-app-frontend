@@ -6,6 +6,7 @@ import { useContext } from 'react';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { ToastContainer } from 'react-toastify';
+import { SocketProviderContext } from './context/SocketContext';
 
 function AppContent() {
   const { theme, toggleTheme, mode } = useContext(ThemeContext);
@@ -27,11 +28,15 @@ function AppContent() {
 
 function App() {
   return (
-    <ThemeProviderContext>
-      <BrowserRouter>
-        <AppContent />
-      </BrowserRouter>
-    </ThemeProviderContext>
+    <SocketProviderContext>
+      <ThemeProviderContext>
+
+        <BrowserRouter>
+          <AppContent />
+        </BrowserRouter>
+
+      </ThemeProviderContext>
+    </SocketProviderContext>
   );
 }
 

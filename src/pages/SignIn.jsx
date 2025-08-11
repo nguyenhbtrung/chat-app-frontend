@@ -13,7 +13,7 @@ import AuthLayout from '../components/AuthLayout';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema } from 'chat-app-zod-schema';
-import { login } from '../services/authService';
+import { login, saveAccessToken } from '../services/authService';
 import { toast } from 'react-toastify';
 import { useApiErrorHandler } from '../hooks/useApiErrorHandler';
 import { useTranslation } from 'react-i18next';
@@ -35,6 +35,8 @@ export default function SignIn() {
         try {
             const res = await login(data);
             console.log(">>>check login: ", res);
+            saveAccessToken(res.data?.data?.token);
+            localStorage.setItem('userId', res.data?.data?.user?.id);
             toast.success(t('api.success.SIGN_IN', { ns: 'api' }));
         } catch (error) {
             handleApiError(error);
