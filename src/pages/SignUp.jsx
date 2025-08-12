@@ -15,7 +15,7 @@ import {
 } from '@mui/icons-material';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import AuthLayout from '../components/AuthLayout';
+import AuthLayout from '../components/auth/AuthLayout';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { registerSchema } from '../schemas/extendedRegisterSchema';
