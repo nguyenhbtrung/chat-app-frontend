@@ -1,0 +1,15 @@
+{
+    "time": {
+        "minute_one": "{{count}} phút",
+        "minute_other": "{{count}} phút",
+        "hour_one": "{{count}} giờ",
+        "hour_other": "{{count}} giờ",
+        "day_one": "{{count}} ngày",
+        "day_other": "{{count}} ngày",
+        "month_one": "{{count}} tháng",
+        "month_other": "{{count}} tháng",
+        "year_one": "{{count}} năm",
+        "year_other": "{{count}} năm",
+        "yesterday": "Hôm qua"
+    }
+}

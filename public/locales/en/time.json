@@ -1,0 +1,15 @@
+{
+    "time": {
+        "minute_one": "{{count}} min",
+        "minute_other": "{{count}} mins",
+        "hour_one": "{{count}} hour",
+        "hour_other": "{{count}} hours",
+        "day_one": "{{count}} day",
+        "day_other": "{{count}} days",
+        "month_one": "{{count}} month",
+        "month_other": "{{count}} months",
+        "year_one": "{{count}} year",
+        "year_other": "{{count}} years",
+        "yesterday": "Yesterday"
+    }
+}
