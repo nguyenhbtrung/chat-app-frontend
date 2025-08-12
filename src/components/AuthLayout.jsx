@@ -1,5 +1,5 @@
 import { Box, Paper, Typography } from '@mui/material';
-import appLogo from '../assets/file.svg';
+import appLogo from '../assets/appLogo.svg';
 
 export default function AuthLayout({ title, subtitle, children }) {
     return (
