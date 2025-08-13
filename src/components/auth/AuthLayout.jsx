@@ -1,5 +1,6 @@
 import { Box, Paper, Typography } from '@mui/material';
 import appLogo from '../../assets/appLogo.svg';
+import AppLogo from '../../assets/appLogo.svg?react';
 
 export default function AuthLayout({ title, subtitle, children }) {
     return (
@@ -17,8 +18,8 @@ export default function AuthLayout({ title, subtitle, children }) {
             <Box
                 sx={{
                     position: 'absolute',
-                    top: 24,
-                    left: 24,
+                    top: 16,
+                    left: 32,
                     display: 'flex',
                     alignItems: 'center',
                 }}
@@ -33,9 +34,12 @@ export default function AuthLayout({ title, subtitle, children }) {
                         color: 'primary.main'
                     }}
                 > */}
-                <img src={appLogo} width={50} alt="App logo" />
+                {/* <img src={appLogo} width={50} alt="App logo" /> */}
+                <Box sx={{ color: 'logo.text', mt: '8px' }}>
+                    <AppLogo style={{ width: 50 }} />
+                </Box>
                 {/* </Box> */}
-                <Typography sx={{ color: 'primary.main', ml: '16px' }} variant="h6" fontWeight={600}>
+                <Typography sx={{ color: 'logo.text', ml: '16px' }} variant="h6" fontWeight={600}>
                     Chat-Call
                 </Typography>
             </Box>
