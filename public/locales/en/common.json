@@ -1,0 +1,9 @@
+{
+    "tooltip": {
+        "chats": "Chats",
+        "addFriends": "Add friends",
+        "notifications": "Notifications",
+        "account": "Account",
+        "logout": "Logout"
+    }
+}

@@ -34,7 +34,7 @@ let baseTheme = createTheme({
         logo: {
             main: '#ffffffff',
             background: '#1976d2',
-            text: '#90caf9',
+            text: '#1976d2',
         },
         input: {
             background: '#f5f5f5',
@@ -52,6 +52,9 @@ let baseTheme = createTheme({
             offline: '#9e9e9e',
             away: '#ffb300',
             busy: '#d32f2f',
+        },
+        navigation: {
+            selected: '#e0e0e0',
         },
     },
 
@@ -161,7 +164,7 @@ const darkTheme = responsiveFontSizes(
             logo: {
                 main: '#1976d2',
                 background: '#ffffffff',
-                text: '#90caf9'
+                text: '#1976d2'
             },
             input: {
                 background: '#424242',
@@ -179,6 +182,9 @@ const darkTheme = responsiveFontSizes(
                 offline: '#9e9e9e',
                 away: '#ffca28',
                 busy: '#ef5350',
+            },
+            navigation: {
+                selected: '#484848',
             },
         },
     })

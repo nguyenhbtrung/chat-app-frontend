@@ -12,11 +12,36 @@ import {
     Logout,
 } from '@mui/icons-material';
 import AppLogo from '../../assets/appLogo.svg?react';
-// import { ReactComponent as AppLogo } from '../../assets/appLogo.svg?react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const NavigationSidebar = () => {
+    const { t } = useTranslation();
+
     const navigate = useNavigate();
+    const location = useLocation();
+    const { otherUserId } = useParams();
+
+    // Kiểm tra route selected
+    const isSelected = (path) => location.pathname.startsWith(path);
+
+    // Style chung cho IconButton
+    const getIconButtonSx = (selected) => ({
+        width: 44,
+        height: 44,
+        borderRadius: 1,
+        color: selected ? 'text.primary' : 'text.secondary',
+        bgcolor: selected ? 'navigation.selected' : 'transparent',
+        '&:hover': {
+            bgcolor: 'navigation.selected',
+        },
+        '&:focus': {
+            outline: 'none'
+        },
+        '&:active': {
+            boxShadow: 'none'
+        }
+    });
 
     return (
         <Paper
@@ -32,8 +57,8 @@ const NavigationSidebar = () => {
                 height: '100%',
             }}
         >
-            {/* Khu vực logo */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, '& .MuiIconButton-root': { color: 'text.secondary' } }}>
+            {/* Logo */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
                 <Box
                     sx={{
                         width: 44,
@@ -41,45 +66,59 @@ const NavigationSidebar = () => {
                         borderRadius: '50%',
                         bgcolor: 'logo.background',
                         p: 1,
+                        // display: 'flex',
+                        // alignItems: 'center',
+                        // justifyContent: 'center'
                     }}
                 >
-                    {/* <Box
-                        component="img"
-                        src={appLogo}
-                        alt="App Logo"
-                        sx={{
-                            width: 28,
-                            height: 28,
-                            filter: 'brightness(0) invert(1)',
-                        }}
-                    /> */}
                     <Box sx={{ color: 'logo.main' }}>
                         <AppLogo style={{ width: 32, height: 28 }} />
                     </Box>
                 </Box>
 
-                <Tooltip title="Chats" placement="right">
-                    <IconButton><Chat /></IconButton>
+                <Tooltip title={t('tooltip.chats')} placement="right">
+                    <IconButton
+                        onClick={() => navigate(`/${otherUserId}`)}
+                        sx={getIconButtonSx(location.pathname === `/${otherUserId}`)}
+                    >
+                        <Chat />
+                    </IconButton>
                 </Tooltip>
-                <Tooltip title="Friends" placement="right">
-                    <IconButton onClick={() => navigate('/fr')}><People /></IconButton>
+
+                <Tooltip title={t('tooltip.addFriends')} placement="right">
+                    <IconButton
+                        onClick={() => navigate(`/addFriends/${otherUserId}`)}
+                        sx={getIconButtonSx(isSelected('/addFriends'))}
+                    >
+                        <People />
+                    </IconButton>
                 </Tooltip>
-                <Tooltip title="Notifications" placement="right">
-                    <IconButton><Notifications /></IconButton>
+
+                <Tooltip title={t('tooltip.notifications')} placement="right">
+                    <IconButton
+                        onClick={() => navigate(`/notifications/${otherUserId}`)}
+                        sx={getIconButtonSx(isSelected('/notifications'))}
+                    >
+                        <Notifications />
+                    </IconButton>
                 </Tooltip>
             </Box>
 
-            {/* Khu vực account & logout */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, '& .MuiIconButton-root': { color: 'text.secondary' } }}>
-                <Tooltip title="Account" placement="right">
-                    <IconButton><AccountCircle /></IconButton>
+            {/* Account & Logout */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Tooltip title={t('tooltip.account')} placement="right">
+                    <IconButton sx={getIconButtonSx(isSelected('/account'))}>
+                        <AccountCircle />
+                    </IconButton>
                 </Tooltip>
-                <Tooltip title="Logout" placement="right">
-                    <IconButton><Logout /></IconButton>
+                <Tooltip title={t('tooltip.logout')} placement="right">
+                    <IconButton sx={getIconButtonSx(false)}>
+                        <Logout />
+                    </IconButton>
                 </Tooltip>
             </Box>
         </Paper>
     );
-}
+};
 
 export default NavigationSidebar;
