@@ -154,6 +154,7 @@ const MainLayout = () => {
                         px: 1,
                         zIndex: 1200,
                         borderRadius: '0px',
+                        '& .MuiIconButton-root': { color: 'text.secondary' },
                     }}
                 >
                     <IconButton onClick={() => setMobileNavOpen(true)}><Menu /></IconButton>
