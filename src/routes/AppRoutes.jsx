@@ -3,7 +3,7 @@ import SignIn from '../pages/SignIn';
 import SignUp from '../pages/SignUp';
 import TestSocket from '../pages/TestSocket';
 import { TestChat } from '../pages/TestChat';
-import MainLayout from '../pages/ChatInterface';
+import MainLayout from '../pages/MainLayout';
 import Chats from '../pages/Chats';
 
 export default function AppRoutes() {
