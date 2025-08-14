@@ -15,13 +15,13 @@ function AppContent() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <ToastContainer position="top-right" autoClose={3000} />
-      <div style={{ padding: 16 }}>
-        {/* <IconButton onClick={toggleTheme} color="inherit">
+      {/* <div style={{ padding: 16 }}> */}
+      {/* <IconButton onClick={toggleTheme} color="inherit">
           {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
         </IconButton> */}
 
-        <AppRoutes />
-      </div>
+      <AppRoutes />
+      {/* </div> */}
     </ThemeProvider>
   );
 }

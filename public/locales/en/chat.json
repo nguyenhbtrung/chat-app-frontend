@@ -1,0 +1,14 @@
+{
+    "chat": {
+        "title": "Chats",
+        "searchPlaceholder": "Search",
+        "tab": {
+            "all": "All",
+            "friends": "Friends"
+        },
+        "status": {
+            "online": "Online",
+            "offline": "Offline"
+        }
+    }
+}
