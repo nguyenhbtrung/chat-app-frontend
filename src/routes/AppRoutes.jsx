@@ -11,6 +11,7 @@ export default function AppRoutes() {
         <Routes>
             <Route path="/" element={<MainLayout />}>
                 <Route index element={<Chats />} />
+                <Route path='friends' element={<Chats tab={1} />} />
                 <Route path="addFriends" element={<div>Friends</div>} />
                 <Route path="notifications" element={<div>notifications</div>} />
                 <Route path=':otherUserId' element={<Chats />} />
