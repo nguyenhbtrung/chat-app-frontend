@@ -11,9 +11,12 @@ export default function AppRoutes() {
         <Routes>
             <Route path="/" element={<MainLayout />}>
                 <Route index element={<Chats />} />
-                <Route path='/:otherUserId' element={<Chats />} />
+                <Route path="addFriends" element={<div>Friends</div>} />
+                <Route path="notifications" element={<div>notifications</div>} />
+                <Route path=':otherUserId' element={<Chats />} />
                 <Route path='friends/:otherUserId' element={<Chats tab={1} />} />
-                <Route path="/addFriends/:otherUserId" element={<div>Friends</div>} />
+                <Route path="addFriends/:otherUserId" element={<div>Friends</div>} />
+                <Route path="notifications/:otherUserId" element={<div>notifications</div>} />
             </Route>
             <Route path="/tsk" element={<TestSocket />} />
             <Route path="/tc" element={<TestChat />} />

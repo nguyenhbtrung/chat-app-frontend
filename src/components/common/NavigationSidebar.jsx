@@ -78,8 +78,8 @@ const NavigationSidebar = () => {
 
                 <Tooltip title={t('tooltip.chats')} placement="right">
                     <IconButton
-                        onClick={() => navigate(`/${otherUserId}`)}
-                        sx={getIconButtonSx(location.pathname === `/${otherUserId}`)}
+                        onClick={() => navigate(`/${otherUserId || ''}`)}
+                        sx={getIconButtonSx(location.pathname === `/${otherUserId}` || isSelected('/friends'))}
                     >
                         <Chat />
                     </IconButton>
@@ -87,7 +87,7 @@ const NavigationSidebar = () => {
 
                 <Tooltip title={t('tooltip.addFriends')} placement="right">
                     <IconButton
-                        onClick={() => navigate(`/addFriends/${otherUserId}`)}
+                        onClick={() => navigate(`/addFriends/${otherUserId || ''}`)}
                         sx={getIconButtonSx(isSelected('/addFriends'))}
                     >
                         <People />

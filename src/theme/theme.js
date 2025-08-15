@@ -115,6 +115,14 @@ let baseTheme = createTheme({
                 },
             },
         },
+        MuiTab: {
+            styleOverrides: {
+                root: {
+                    '&:focus': { outline: 'none' },
+                    '&.Mui-focusVisible': { outline: 'none' }
+                }
+            }
+        },
     },
 
     breakpoints: {

@@ -218,11 +218,11 @@ const Chats = ({ tab = 0 }) => {
     const changeTab = (val) => {
         switch (val) {
             case 0:
-                navigate(`/${otherUserId}`);
+                navigate(`/${otherUserId || ''}`);
                 break;
 
             default:
-                navigate(`/friends/${otherUserId}`);
+                navigate(`/friends/${otherUserId || ''}`);
                 break;
         }
     };
