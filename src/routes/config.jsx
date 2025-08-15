@@ -3,6 +3,7 @@ import SignUp from '../pages/SignUp';
 import TestSocket from '../pages/TestSocket';
 import { TestChat } from '../pages/TestChat';
 import Chats from '../pages/Chats';
+import AddFriend from '../pages/AddFriend';
 
 export const routeConfig = {
     main: [
@@ -10,10 +11,10 @@ export const routeConfig = {
         { path: 'friends', element: <Chats tab={1} /> },
         {
             path: 'addFriends',
-            element: <div>Friends</div>,
+            element: <AddFriend />,
             children: [
-                { path: 'sent', element: <div>Sent</div> },
-                { path: 'received', element: <div>Received</div> },
+                { path: 'sent', element: <AddFriend tab={1} /> },
+                { path: 'received', element: <AddFriend tab={2} /> },
             ],
         },
         { path: 'notifications', element: <div>notifications</div> },

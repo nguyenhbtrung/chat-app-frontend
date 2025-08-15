@@ -1,0 +1,11 @@
+{
+    "addFriends": {
+        "title": "Add friends",
+        "searchPlaceholder": "Search",
+        "tab": {
+            "users": "Users",
+            "sent": "Sent",
+            "received": "Received"
+        }
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "addFriends": {
+        "title": "Thêm bạn bè",
+        "searchPlaceholder": "Tìm kiếm",
+        "tab": {
+            "user": "Người dùng",
+            "sent": "Đã gửi",
+            "received": "Đã nhận"
+        }
+    }
+}
