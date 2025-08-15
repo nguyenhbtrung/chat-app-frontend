@@ -32,13 +32,16 @@ import {
     AccountCircle,
     FiberManualRecord,
     Logout,
-    Menu
+    Menu,
+    DashboardCustomize,
+    ChatBubbleOutline,
+    ChatBubble
 } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import NavigationSidebar from '../components/common/NavigationSidebar';
 import ContentSidebar from '../components/common/ContentSiderbar';
 import MainChatPanel from '../components/common/MainChatPanel';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 const MainLayout = () => {
     const [selectedChat, setSelectedChat] = useState('Ls');
@@ -49,6 +52,16 @@ const MainLayout = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const { otherUserId } = useParams();
+    const location = useLocation();
+
+    const pageIconMap = [
+        { path: '/addFriends', icon: <People /> },
+        { path: '/notifications', icon: <Notifications /> },
+    ];
+
+    const currentIcon = pageIconMap.find(item =>
+        location.pathname.startsWith(item.path)
+    )?.icon || <Chat />;
 
     // const messages = [
     //     { sender: 'Lisa', text: 'Hello', time: '17:00', isOwn: false },
@@ -157,8 +170,15 @@ const MainLayout = () => {
                         '& .MuiIconButton-root': { color: 'text.secondary' },
                     }}
                 >
-                    <IconButton onClick={() => setMobileNavOpen(true)}><Menu /></IconButton>
-                    <IconButton onClick={() => setMobileChatListOpen(true)}><Chat /></IconButton>
+                    {/* Nút mở Navigation Sidebar */}
+                    <IconButton onClick={() => setMobileNavOpen(true)}>
+                        <Menu />
+                    </IconButton>
+
+                    {/* Nút mở Content Sidebar */}
+                    <IconButton onClick={() => setMobileChatListOpen(true)}>
+                        {currentIcon}
+                    </IconButton>
                     <Box sx={{ flexGrow: 1, ml: 1 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <Badge
@@ -192,7 +212,6 @@ const MainLayout = () => {
                 <Box sx={{ mr: 2 }}><NavigationSidebar /></Box>
             )}
 
-            {/* Chat List Sidebar */}
             {isMobile ? (
                 <Drawer
                     anchor="left"
