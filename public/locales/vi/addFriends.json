@@ -3,9 +3,17 @@
         "title": "Thêm bạn bè",
         "searchPlaceholder": "Tìm kiếm",
         "tab": {
-            "user": "Người dùng",
+            "users": "Người dùng",
             "sent": "Đã gửi",
             "received": "Đã nhận"
+        },
+        "subTitle": {
+            "onlineUsers": "Người dùng trực tuyến",
+            "otherUsers": "Người dùng khác"
+        },
+        "button": {
+            "addFriend": "Thêm bạn bè",
+            "cancelRequest": "Hủy lời mời"
         }
     }
 }

@@ -6,6 +6,14 @@
             "users": "Users",
             "sent": "Sent",
             "received": "Received"
+        },
+        "subTitle": {
+            "onlineUsers": "Online users",
+            "otherUsers": "Other users"
+        },
+        "button": {
+            "addFriend": "Add friend",
+            "cancelRequest": "Cancel request"
         }
     }
 }
