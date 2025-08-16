@@ -35,9 +35,6 @@ const NavigationSidebar = () => {
         '&:hover': {
             bgcolor: 'navigation.selected',
         },
-        '&:focus': {
-            outline: 'none'
-        },
         '&:active': {
             boxShadow: 'none'
         }
