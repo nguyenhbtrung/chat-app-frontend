@@ -17,7 +17,7 @@ const SentTabContent = () => {
     ];
 
     return (
-        <List sx={{ flex: 1, overflow: 'auto', p: 0 }}>
+        <List sx={{ flex: 1, overflow: 'auto', p: 1, }}>
             <SentTabsList
                 requests={requestsSent}
                 title={t('addFriends.subTitle.requestsSent')}

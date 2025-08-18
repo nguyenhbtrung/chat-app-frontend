@@ -41,7 +41,7 @@ const UsersTabContent = () => {
     ];
 
     return (
-        <List sx={{ flex: 1, overflow: 'auto', p: 0 }}>
+        <List sx={{ flex: 1, overflow: 'auto', p: 1 }}>
             <UsersTabsList
                 users={onlineUsers}
                 title={t('addFriends.subTitle.onlineUsers')}
