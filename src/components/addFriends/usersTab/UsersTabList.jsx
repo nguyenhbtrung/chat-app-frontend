@@ -24,7 +24,7 @@ const UsersTabsList = ({ users, title }) => {
                 <ListItem
                     key={user.id}
                     secondaryAction={
-                        user.isFriend ? (
+                        user.requestSent ? (
                             <Tooltip title={t('addFriends.button.cancelRequest')} placement="right">
                                 <IconButton sx={{ color: 'text.secondary' }} edge="end">
                                     <Close />
