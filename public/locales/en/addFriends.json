@@ -9,11 +9,14 @@
         },
         "subTitle": {
             "onlineUsers": "Online users",
-            "otherUsers": "Other users"
+            "otherUsers": "Other users",
+            "requestsSent": "Requests sent",
+            "cancelled": "Cancelled"
         },
         "button": {
             "addFriend": "Add friend",
-            "cancelRequest": "Cancel request"
+            "cancelRequest": "Cancel request",
+            "deleteAll": "Delete all"
         }
     }
 }

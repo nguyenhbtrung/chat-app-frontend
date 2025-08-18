@@ -30,6 +30,8 @@ let baseTheme = createTheme({
         text: {
             primary: '#1a1a1a',
             secondary: '#555',
+            tertiary: '#888',
+            disabled: '#aaa',
         },
         logo: {
             main: '#ffffffff',
@@ -177,6 +179,8 @@ const darkTheme = responsiveFontSizes(
             text: {
                 primary: '#ffffff',
                 secondary: '#cccccc',
+                tertiary: '#999999',
+                disabled: '#666666',
             },
             logo: {
                 main: '#1976d2',

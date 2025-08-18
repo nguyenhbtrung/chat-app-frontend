@@ -26,6 +26,8 @@ import { useLocation, useNavigate, useOutletContext, useParams } from 'react-rou
 import useFormatTime from '../hooks/useFormatTime';
 import { useTranslation } from 'react-i18next';
 import UsersTabContent from '../components/addFriends/usersTab/UsersTabContent';
+import SentTabContent from '../components/addFriends/sentTab/SentTabContent';
+import ReceivedTabContent from '../components/addFriends/receivedTab/ReceivedTabContent';
 
 const AddFriend = ({ tab = 0 }) => {
 
@@ -97,7 +99,9 @@ const AddFriend = ({ tab = 0 }) => {
                     }}
                 />
             </Box>
-            <UsersTabContent />
+            {tab === 0 && <UsersTabContent />}
+            {tab === 1 && <SentTabContent />}
+            {tab === 2 && <ReceivedTabContent />}
         </>
     );
 
