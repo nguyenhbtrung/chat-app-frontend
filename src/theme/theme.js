@@ -33,6 +33,10 @@ let baseTheme = createTheme({
             background: '#e8f5e9',
             onBackground: '#2e7d32'
         },
+        action: {
+            disabled: "#9e9e9e",
+            disabledBackground: "#e0e0e0"
+        },
         background: {
             default: '#f5f5f5',
             paper: '#ffffff',
@@ -197,6 +201,10 @@ const darkTheme = responsiveFontSizes(
                 contrastText: '#fff',
                 background: '#3b1818',
                 onBackground: '#ef9a9a'
+            },
+            action: {
+                disabled: "#ffffff4d",
+                // disabledBackground: "#424242" 
             },
             background: {
                 default: '#121212',

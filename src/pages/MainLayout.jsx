@@ -42,12 +42,14 @@ import NavigationSidebar from '../components/common/NavigationSidebar';
 import ContentSidebar from '../components/common/ContentSiderbar';
 import MainChatPanel from '../components/common/MainChatPanel';
 import { useLocation, useParams } from 'react-router-dom';
+import SetupDialog from '../components/common/dialog/SetupDialog';
 
 const MainLayout = () => {
     const [selectedChat, setSelectedChat] = useState('Ls');
     const [message, setMessage] = useState('');
     const [mobileNavOpen, setMobileNavOpen] = useState(false);
     const [mobileChatListOpen, setMobileChatListOpen] = useState(false);
+    const [open, setOpen] = useState(true);
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -253,6 +255,7 @@ const MainLayout = () => {
                 setMessage={setMessage}
                 messages={messages}
             />
+            <SetupDialog open={open} onClose={() => setOpen(false)} />
         </Box>
     );
 };

@@ -1,0 +1,19 @@
+{
+    "setup": {
+        "title": {
+            "line1": "Trước khi bắt đầu,",
+            "line2": "bạn có thể muốn thiết lập một số thông tin."
+        },
+        "label": {
+            "avatar": "Ảnh đại diện",
+            "displayName": "Tên hiển thị"
+        },
+        "placeholder": {
+            "displayName": "Nhập tên của bạn"
+        },
+        "button": {
+            "skip": "Bỏ qua",
+            "save": "Lưu"
+        }
+    }
+}
