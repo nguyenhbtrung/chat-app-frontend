@@ -11,12 +11,22 @@
             "onlineUsers": "Online users",
             "otherUsers": "Other users",
             "requestsSent": "Requests sent",
-            "cancelled": "Cancelled"
+            "cancelled": "Cancelled",
+            "requestsReceived": "Requests received"
         },
         "button": {
             "addFriend": "Add friend",
             "cancelRequest": "Cancel request",
-            "deleteAll": "Delete all"
+            "deleteAll": "Delete all",
+            "acceptRequest": "Accept",
+            "rejectRequest": "Reject"
+        },
+        "status": {
+            "pending": "Pending",
+            "accepted": "Accepted",
+            "rejected": "Rejected",
+            "cancelled": "Cancelled",
+            "blocked": "Blocked"
         }
     }
 }

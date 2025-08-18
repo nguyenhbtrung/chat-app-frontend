@@ -13,6 +13,11 @@ let baseTheme = createTheme({
         },
         error: {
             main: '#d32f2f',
+            light: '#ef5350',
+            dark: '#b71c1c',
+            contrastText: '#fff',
+            background: '#fdecea',
+            onBackground: '#d32f2f'
         },
         warning: {
             main: '#f57c00',
@@ -22,6 +27,11 @@ let baseTheme = createTheme({
         },
         success: {
             main: '#2e7d32',
+            light: '#4caf50',
+            dark: '#1b5e20',
+            contrastText: '#fff',
+            background: '#e8f5e9',
+            onBackground: '#2e7d32'
         },
         background: {
             default: '#f5f5f5',
@@ -172,6 +182,22 @@ const darkTheme = responsiveFontSizes(
         palette: {
             ...baseTheme.palette,
             mode: 'dark',
+            success: {
+                main: '#4caf50',
+                light: '#66bb6a',
+                dark: '#388e3c',
+                contrastText: '#fff',
+                background: '#1b3c29',
+                onBackground: '#81c784'
+            },
+            error: {
+                main: '#ef5350',
+                light: '#e57373',
+                dark: '#c62828',
+                contrastText: '#fff',
+                background: '#3b1818',
+                onBackground: '#ef9a9a'
+            },
             background: {
                 default: '#121212',
                 paper: '#1e1e1e',
