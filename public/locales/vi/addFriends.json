@@ -1,0 +1,32 @@
+{
+    "addFriends": {
+        "title": "Thêm bạn bè",
+        "searchPlaceholder": "Tìm kiếm",
+        "tab": {
+            "users": "Người dùng",
+            "sent": "Đã gửi",
+            "received": "Đã nhận"
+        },
+        "subTitle": {
+            "onlineUsers": "Người dùng trực tuyến",
+            "otherUsers": "Người dùng khác",
+            "requestsSent": "Yêu cầu đã gửi",
+            "cancelled": "Đã hủy",
+            "requestsReceived": "Yêu cầu đã nhận"
+        },
+        "button": {
+            "addFriend": "Thêm bạn bè",
+            "cancelRequest": "Hủy yêu cầu",
+            "deleteAll": "Xóa tất cả",
+            "acceptRequest": "Chấp nhận",
+            "rejectRequest": "Từ chối"
+        },
+        "status": {
+            "pending": "Đang chờ",
+            "accepted": "Đã chấp nhận",
+            "rejected": "Đã từ chối",
+            "cancelled": "Đã hủy",
+            "blocked": "Đã chặn"
+        }
+    }
+}

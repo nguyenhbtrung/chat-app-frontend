@@ -1,0 +1,14 @@
+{
+    "chat": {
+        "title": "Đoạn chat",
+        "searchPlaceholder": "Tìm kiếm",
+        "tab": {
+            "all": "Tất cả",
+            "friends": "Bạn bè"
+        },
+        "status": {
+            "online": "Trực tuyến",
+            "offline": "Ngoại tuyến"
+        }
+    }
+}

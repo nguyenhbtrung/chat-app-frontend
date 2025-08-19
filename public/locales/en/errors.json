@@ -1,0 +1,8 @@
+{
+    "Username is required": "Username is required",
+    "Password is required": "Password is required",
+    "Email format is invalid": "Email format is invalid",
+    "Password must be at least 8 characters": "Password must be at least 8 characters",
+    "Please confirm your password": "Please confirm your password",
+    "Passwords do not match": "Passwords do not match"
+}

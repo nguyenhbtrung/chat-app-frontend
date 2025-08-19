@@ -1,0 +1,19 @@
+{
+    "setup": {
+        "title": {
+            "line1": "Before you start,",
+            "line2": "you may want to set up some information."
+        },
+        "label": {
+            "avatar": "Avatar",
+            "displayName": "Display name"
+        },
+        "placeholder": {
+            "displayName": "Enter your name"
+        },
+        "button": {
+            "skip": "Skip",
+            "save": "Save"
+        }
+    }
+}

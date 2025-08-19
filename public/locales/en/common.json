@@ -1,0 +1,18 @@
+{
+    "tooltip": {
+        "chats": "Chats",
+        "addFriends": "Add friends",
+        "notifications": "Notifications",
+        "account": "Account",
+        "logout": "Logout"
+    },
+    "button": {
+        "cancel": "Cancel",
+        "apply": "Apply"
+    },
+    "dialog": {
+        "avatarCropper": {
+            "title": "Edit avatar"
+        }
+    }
+}

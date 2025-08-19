@@ -1,0 +1,8 @@
+{
+    "Username is required": "Tên đăng nhập là bắt buộc",
+    "Password is required": "Mật khẩu là bắt buộc",
+    "Email format is invalid": "Email không đúng định dạng",
+    "Password must be at least 8 characters": "Mật khẩu phải có ít nhất 8 ký tự",
+    "Please confirm your password": "Hãy xác nhận mật khẩu của bạn",
+    "Passwords do not match": "Mật khẩu không khớp"
+}

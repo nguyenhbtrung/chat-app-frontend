@@ -1,0 +1,18 @@
+{
+    "tooltip": {
+        "chats": "Đoạn chat",
+        "addFriends": "Thêm bạn bè",
+        "notifications": "Thông báo",
+        "account": "Tài khoản",
+        "logout": "Đăng xuất"
+    },
+    "button": {
+        "cancel": "Hủy",
+        "apply": "Áp dụng"
+    },
+    "dialog": {
+        "avatarCropper": {
+            "title": "Chỉnh sửa ảnh đại diện"
+        }
+    }
+}
