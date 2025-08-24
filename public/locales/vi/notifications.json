@@ -1,0 +1,15 @@
+{
+    "title": "Thông báo",
+    "subTitle": {
+        "new": "Mới",
+        "before": "Trước đó"
+    },
+    "button": {
+        "deleteAll": "Xóa tất cả"
+    },
+    "content": {
+        "default": "Bạn có một thông báo mới",
+        "friendRequestAccepted": "Đã chấp nhận yêu cầu kết bạn của bạn",
+        "friendRequestRejected": "Đã từ chối yêu cầu kết bạn của bạn"
+    }
+}
