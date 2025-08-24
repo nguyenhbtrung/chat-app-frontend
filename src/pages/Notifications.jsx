@@ -55,19 +55,24 @@ const Notifications = ({ tab = 0 }) => {
 
     const formatTime = useFormatTime();
 
-    const onlineUsers = [
+    const handleMarkAsRead = (id) => {
+        setNotifications((prev) =>
+            prev.map((n) =>
+                n.id === id ? { ...n, isRead: true } : n
+            )
+        );
+
+    };
+
+
+    const [notifications, setNotifications] = useState([
         {
             id: 5,
             type: 'friend_request_accepted',
             content: 'friendRequestAccepted',
             isRead: false,
             createdAt: '2025-08-22T20:58:54.000Z',
-            sender: {
-                id: 1,
-                userName: "johncena",
-                displayName: "John Cena",
-                avatarUrl: null,
-            },
+            sender: { id: 1, userName: "johncena", displayName: "John Cena", avatarUrl: null },
         },
         {
             id: 4,
@@ -75,12 +80,7 @@ const Notifications = ({ tab = 0 }) => {
             content: 'friendRequestRejected',
             isRead: false,
             createdAt: '2025-08-22T19:58:54.000Z',
-            sender: {
-                id: 2,
-                userName: "tokuda",
-                displayName: "Tokuda",
-                avatarUrl: null,
-            },
+            sender: { id: 2, userName: "tokuda", displayName: "Tokuda", avatarUrl: null },
         },
         {
             id: 3,
@@ -88,12 +88,7 @@ const Notifications = ({ tab = 0 }) => {
             content: 'friendRequestAccepted',
             isRead: false,
             createdAt: '2025-08-21T20:58:54.000Z',
-            sender: {
-                id: 3,
-                userName: "akira",
-                displayName: "Akira",
-                avatarUrl: null,
-            },
+            sender: { id: 3, userName: "akira", displayName: "Akira", avatarUrl: null },
         },
         {
             id: 2,
@@ -101,12 +96,7 @@ const Notifications = ({ tab = 0 }) => {
             content: 'friendRequestRejected',
             isRead: false,
             createdAt: '2025-08-20T20:58:54.000Z',
-            sender: {
-                id: 4,
-                userName: "putin",
-                displayName: "Putin",
-                avatarUrl: null,
-            },
+            sender: { id: 4, userName: "putin", displayName: "Putin", avatarUrl: null },
         },
         {
             id: 1,
@@ -114,14 +104,10 @@ const Notifications = ({ tab = 0 }) => {
             content: 'friendRequestAccepted',
             isRead: false,
             createdAt: '2025-08-19T20:58:54.000Z',
-            sender: {
-                id: 5,
-                userName: "trump",
-                displayName: "Trump",
-                avatarUrl: null,
-            },
+            sender: { id: 5, userName: "trump", displayName: "Trump", avatarUrl: null },
         },
-    ];
+    ]);
+
 
     return (
         <>
@@ -132,13 +118,15 @@ const Notifications = ({ tab = 0 }) => {
             </Box>
             <List sx={{ flex: 1, overflow: 'auto', p: 1 }}>
                 <NotificationList
-                    notifications={onlineUsers}
+                    notifications={notifications}
                     title={t('subTitle.new')}
+                    handleMarkAsRead={handleMarkAsRead}
                 />
                 <Divider variant="middle" sx={{ my: 2, backgroundColor: '#e0e0e0' }} />
                 <NotificationList
-                    notifications={onlineUsers}
+                    notifications={notifications}
                     title={t('subTitle.before')}
+                    handleMarkAsRead={handleMarkAsRead}
                 />
             </List>
         </>

@@ -8,6 +8,7 @@ import {
     Tooltip,
     Box,
     Button,
+    ListItemButton,
 } from '@mui/material';
 import {
     AccessTime,
@@ -19,7 +20,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import useFormatTime from '../../hooks/useFormatTime';
 
-const NotificationList = ({ notifications, title }) => {
+const NotificationList = ({ notifications, title, handleMarkAsRead }) => {
     const { t } = useTranslation('notifications');
     const formatTime = useFormatTime();
 
@@ -50,46 +51,55 @@ const NotificationList = ({ notifications, title }) => {
                     alignItems="flex-start"
                     secondaryAction={
                         <>
-                            {notification.type === 'friend_request_accepted' &&
-                                <CheckCircle color='success' />
-                            }
-                            {notification.type === 'friend_request_rejected' &&
-                                <CancelRounded color='error' />
-                            }
+                            {notification.type === 'friend_request_accepted' && <CheckCircle color="success" />}
+                            {notification.type === 'friend_request_rejected' && <CancelRounded color="error" />}
                         </>
                     }
+                    disablePadding   // để loại bỏ padding thừa vì ListItemButton sẽ lo phần đó
                 >
-                    <ListItemAvatar>
-                        <Avatar src={notification.sender.avatarUrl || undefined} alt={notification.sender.displayName} sx={{ backgroundColor: '#e0e0e0' }} />
-                    </ListItemAvatar>
-                    <ListItemText
-                        primary={
-                            <Typography variant='h6' fontWeight='bold'>
-                                {notification.sender.displayName || notification.sender.userName}
-                            </Typography>
-                        }
-                        secondary={
-                            <>
-                                <Typography
-                                    component="span"
-                                    variant="body2"
-                                    color="text.primary"
-                                >
-                                    {t([`content.${notification.content}`, `content.default`])}
+                    <ListItemButton
+                        alignItems="flex-start"
+                        onClick={() => handleMarkAsRead(notification.id)}
+                        sx={{
+                            bgcolor: notification.isRead ? 'background.paper' : 'action.hover',
+                            '&:hover': {
+                                bgcolor: 'action.selected',
+                            },
+                        }}
+                    >
+                        <ListItemAvatar>
+                            <Avatar
+                                src={notification.sender.avatarUrl || undefined}
+                                alt={notification.sender.displayName}
+                                sx={{ backgroundColor: '#e0e0e0' }}
+                            />
+                        </ListItemAvatar>
+                        <ListItemText
+                            primary={
+                                <Typography variant="h6" fontWeight="bold">
+                                    {notification.sender.displayName || notification.sender.userName}
                                 </Typography>
-                                <Typography
-                                    component="span"
-                                    variant="caption"
-                                    color="text.secondary"
-                                    sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
-                                >
-                                    <AccessTime sx={{ fontSize: 14 }} />
-                                    {formatTime(notification.createdAt)}
-                                </Typography>
-                            </>
-                        }
-                    />
+                            }
+                            secondary={
+                                <>
+                                    <Typography component="span" variant="body2" color="text.primary">
+                                        {t([`content.${notification.content}`, `content.default`])}
+                                    </Typography>
+                                    <Typography
+                                        component="span"
+                                        variant="caption"
+                                        color="text.secondary"
+                                        sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+                                    >
+                                        <AccessTime sx={{ fontSize: 14 }} />
+                                        {formatTime(notification.createdAt)}
+                                    </Typography>
+                                </>
+                            }
+                        />
+                    </ListItemButton>
                 </ListItem>
+
 
             ))
             }
