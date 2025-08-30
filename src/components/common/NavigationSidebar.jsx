@@ -14,8 +14,9 @@ import {
 import AppLogo from '../../assets/appLogo.svg?react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
 
-const NavigationSidebar = () => {
+const NavigationSidebar = ({ setOpenProfile }) => {
     const { t } = useTranslation();
 
     const navigate = useNavigate();
@@ -104,7 +105,10 @@ const NavigationSidebar = () => {
             {/* Account & Logout */}
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <Tooltip title={t('tooltip.account')} placement="right">
-                    <IconButton sx={getIconButtonSx(isSelected('/account'))}>
+                    <IconButton
+                        onClick={() => setOpenProfile(true)}
+                        sx={getIconButtonSx(false)}
+                    >
                         <AccountCircle />
                     </IconButton>
                 </Tooltip>

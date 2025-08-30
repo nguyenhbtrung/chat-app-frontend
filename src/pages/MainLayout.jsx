@@ -51,6 +51,7 @@ const MainLayout = () => {
     const [mobileNavOpen, setMobileNavOpen] = useState(false);
     const [mobileChatListOpen, setMobileChatListOpen] = useState(false);
     const [open, setOpen] = useState(true);
+    const [openProfile, setOpenProfile] = useState(false);
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -209,10 +210,10 @@ const MainLayout = () => {
             {/* Navigation Sidebar */}
             {isMobile ? (
                 <Drawer open={mobileNavOpen} onClose={() => setMobileNavOpen(false)}>
-                    <NavigationSidebar />
+                    <NavigationSidebar setOpenProfile={setOpenProfile} />
                 </Drawer>
             ) : (
-                <Box sx={{ mr: 2 }}><NavigationSidebar /></Box>
+                <Box sx={{ mr: 2 }}><NavigationSidebar setOpenProfile={setOpenProfile} /></Box>
             )}
 
             {isMobile ? (
@@ -257,7 +258,7 @@ const MainLayout = () => {
                 messages={messages}
             />
             <SetupDialog open={open} onClose={() => setOpen(false)} />
-            <ProfileSettingsDialog open={open} onClose={() => setOpen(false)} isMobile={isMobile} />
+            <ProfileSettingsDialog open={openProfile} onClose={() => setOpenProfile(false)} isMobile={isMobile} />
         </Box>
     );
 };
