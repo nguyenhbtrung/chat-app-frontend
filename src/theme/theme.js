@@ -1,8 +1,9 @@
 import { createTheme, responsiveFontSizes } from '@mui/material/styles';
+import { THEMES } from '../constants';
 
 let baseTheme = createTheme({
     palette: {
-        mode: 'light',
+        mode: THEMES.LIGHT,
         primary: {
             main: '#1976d2',
             contrastText: '#fff',
@@ -72,6 +73,7 @@ let baseTheme = createTheme({
         navigation: {
             selected: '#e0e0e0',
         },
+        divider: '#e0e0e0',
     },
 
     spacing: 8, // spacing unit (8px, 16px...)
@@ -185,7 +187,7 @@ const darkTheme = responsiveFontSizes(
         ...baseTheme,
         palette: {
             ...baseTheme.palette,
-            mode: 'dark',
+            mode: THEMES.DARK,
             success: {
                 main: '#4caf50',
                 light: '#66bb6a',
