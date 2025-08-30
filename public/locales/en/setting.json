@@ -1,0 +1,36 @@
+{
+    "title": "Profile & Settings",
+    "profile": {
+        "title": "Profile",
+        "label": {
+            "userName": "Username",
+            "displayName": "Display name",
+            "email": "Email",
+            "password": "password"
+        },
+        "placeholder": {
+            "displayName": "Enter your name"
+        },
+        "button": {
+            "changePassword": "Change password",
+            "saveChanges": "Save changes"
+        }
+    },
+    "settings": {
+        "title": "Settings",
+        "theme": {
+            "label": "Theme",
+            "option": {
+                "dark": "Dark",
+                "light": "Light"
+            }
+        },
+        "language": {
+            "label": "Language",
+            "option": {
+                "vi": "Vietnamese",
+                "en": "English"
+            }
+        }
+    }
+}

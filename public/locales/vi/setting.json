@@ -1,0 +1,36 @@
+{
+    "title": "Hồ sơ & Cài đặt",
+    "profile": {
+        "title": "Hồ sơ",
+        "label": {
+            "userName": "Tên đăng nhập",
+            "displayName": "Tên hiển thị",
+            "email": "Email",
+            "password": "Mật khẩu"
+        },
+        "placeholder": {
+            "displayName": "Nhập tên của bạn"
+        },
+        "button": {
+            "changePassword": "Đổi mật khẩu",
+            "saveChanges": "Lưu thay đổi"
+        }
+    },
+    "settings": {
+        "title": "Cài đặt",
+        "theme": {
+            "label": "Chủ đề",
+            "option": {
+                "dark": "Tối",
+                "light": "Sáng"
+            }
+        },
+        "language": {
+            "label": "Ngôn ngữ",
+            "option": {
+                "vi": "Tiếng Việt",
+                "en": "Tiếng Anh"
+            }
+        }
+    }
+}

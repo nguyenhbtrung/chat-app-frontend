@@ -43,6 +43,7 @@ import ContentSidebar from '../components/common/ContentSiderbar';
 import MainChatPanel from '../components/common/MainChatPanel';
 import { useLocation, useParams } from 'react-router-dom';
 import SetupDialog from '../components/common/dialog/SetupDialog';
+import ProfileSettingsDialog from '../components/common/dialog/ProfileSettingsDialog';
 
 const MainLayout = () => {
     const [selectedChat, setSelectedChat] = useState('Ls');
@@ -256,6 +257,7 @@ const MainLayout = () => {
                 messages={messages}
             />
             <SetupDialog open={open} onClose={() => setOpen(false)} />
+            <ProfileSettingsDialog open={open} onClose={() => setOpen(false)} isMobile={isMobile} />
         </Box>
     );
 };
