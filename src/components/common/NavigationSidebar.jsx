@@ -102,9 +102,9 @@ const NavigationSidebar = ({ setOpenProfile }) => {
                 </Tooltip>
             </Box>
 
-            {/* Account & Logout */}
+            {/* ProfileSettings & Logout */}
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <Tooltip title={t('tooltip.account')} placement="right">
+                <Tooltip title={t('tooltip.profileSettings')} placement="right">
                     <IconButton
                         onClick={() => setOpenProfile(true)}
                         sx={getIconButtonSx(false)}
