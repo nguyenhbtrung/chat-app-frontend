@@ -21,6 +21,7 @@ import AvatarCropper from "./AvatarCropper";
 import { useTranslation } from "react-i18next";
 import { ThemeContext } from "../../../context/ThemeContext";
 import { LANGUAGES, THEMES } from "../../../constants";
+import ChangePasswordDialog from "./ChangePasswordDialog";
 
 const ProfileSettingsDialog = ({ open, onClose, isMobile }) => {
     const { t, i18n } = useTranslation('setting');
@@ -31,6 +32,7 @@ const ProfileSettingsDialog = ({ open, onClose, isMobile }) => {
     const [tempImage, setTempImage] = useState(null);
     const [isCropping, setIsCropping] = useState(false);
     const [scale, setScale] = useState(1.2);
+    const [openChangePassword, setOpenChangePassword] = useState(false);
 
     const [profile, setProfile] = useState({
         userName: "user01",
@@ -79,6 +81,11 @@ const ProfileSettingsDialog = ({ open, onClose, isMobile }) => {
             "\n\nSettings:\n" +
             JSON.stringify(settings, null, 2)
         );
+    };
+
+    const handleChangePasswordSubmit = (data) => {
+        alert("Password changed:\n" + JSON.stringify(data, null, 2));
+        setOpenChangePassword(false);
     };
 
     return (
@@ -299,8 +306,18 @@ const ProfileSettingsDialog = ({ open, onClose, isMobile }) => {
 
             {tab === 0 && (
                 <DialogActions sx={{ justifyContent: "flex-end", px: 3, pb: 2 }}>
-                    <Button variant="outlined" color="inherit">{t('profile.button.changePassword')}</Button>
-                    <Button variant="contained" color="primary" onClick={handleSave}>
+                    <Button
+                        variant="outlined"
+                        color="inherit"
+                        onClick={() => setOpenChangePassword(true)}
+                    >
+                        {t('profile.button.changePassword')}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleSave}
+                    >
                         {t('profile.button.saveChanges')}
                     </Button>
                 </DialogActions>
@@ -314,6 +331,12 @@ const ProfileSettingsDialog = ({ open, onClose, isMobile }) => {
                 onScaleChange={setScale}
                 onCancel={() => setIsCropping(false)}
                 onApply={handleApplyCrop}
+            />
+
+            <ChangePasswordDialog
+                open={openChangePassword}
+                onClose={() => setOpenChangePassword(false)}
+                onSubmit={handleChangePasswordSubmit}
             />
         </Dialog>
     );

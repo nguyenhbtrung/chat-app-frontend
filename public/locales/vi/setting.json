@@ -14,6 +14,18 @@
         "button": {
             "changePassword": "Đổi mật khẩu",
             "saveChanges": "Lưu thay đổi"
+        },
+        "changePassword": {
+            "title": "Đổi mật khẩu",
+            "label": {
+                "current": "Mật khẩu hiện tại",
+                "new": "Mật khẩu mới",
+                "confirm": "Xác nhận mật khẩu"
+            },
+            "button": {
+                "cancel": "Huỷ",
+                "save": "Lưu"
+            }
         }
     },
     "settings": {

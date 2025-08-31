@@ -14,6 +14,18 @@
         "button": {
             "changePassword": "Change password",
             "saveChanges": "Save changes"
+        },
+        "changePassword": {
+            "title": "Change password",
+            "label": {
+                "current": "Current password",
+                "new": "New password",
+                "confirm": "Confirm password"
+            },
+            "button": {
+                "cancel": "Cancel",
+                "save": "Save"
+            }
         }
     },
     "settings": {
