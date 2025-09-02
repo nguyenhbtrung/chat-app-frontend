@@ -12,6 +12,9 @@ import {
 } from "@mui/material";
 import { CheckCircle, Close, Lock, Visibility, VisibilityOff, VpnKey } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { changePasswordSchema } from "chat-app-zod-schema";
 
 const ChangePasswordDialog = ({ open, onClose, onSubmit }) => {
     const { t } = useTranslation("setting");
@@ -20,30 +23,30 @@ const ChangePasswordDialog = ({ open, onClose, onSubmit }) => {
     const [showNew, setShowNew] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
 
-    const [form, setForm] = useState({
+    const defaultValues = {
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
+    };
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        reset,
+    } = useForm({
+        resolver: zodResolver(changePasswordSchema),
+        defaultValues
     });
 
-    const handleChange = (field) => (e) => {
-        setForm({ ...form, [field]: e.target.value });
+    const handleFormSubmit = (data) => {
+        onSubmit(data);
+        reset(defaultValues);
+        setShowCurrent(false);
+        setShowNew(false);
+        setShowConfirm(false);
     };
 
-    const handleSave = () => {
-        // validate
-        if (!form.currentPassword || !form.newPassword) {
-            alert(t("profile.changePassword.error.required"));
-            return;
-        }
-        if (form.newPassword !== form.confirmPassword) {
-            alert(t("profile.changePassword.error.mismatch"));
-            return;
-        }
-
-        onSubmit(form);
-        setForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
-    };
 
     return (
         <Dialog
@@ -85,8 +88,6 @@ const ChangePasswordDialog = ({ open, onClose, onSubmit }) => {
                     <TextField
                         type={showCurrent ? 'text' : 'password'}
                         label={t("profile.changePassword.label.current")}
-                        value={form.currentPassword}
-                        onChange={handleChange("currentPassword")}
                         fullWidth
                         slotProps={{
                             input: {
@@ -107,12 +108,13 @@ const ChangePasswordDialog = ({ open, onClose, onSubmit }) => {
                                 ),
                             }
                         }}
+                        {...register('currentPassword')}
+                        error={!!errors.currentPassword}
+                        helperText={errors.currentPassword?.message && t(errors.currentPassword.message, { ns: 'errors' })}
                     />
                     <TextField
                         type={showNew ? 'text' : 'password'}
                         label={t("profile.changePassword.label.new")}
-                        value={form.newPassword}
-                        onChange={handleChange("newPassword")}
                         fullWidth
                         slotProps={{
                             input: {
@@ -133,12 +135,13 @@ const ChangePasswordDialog = ({ open, onClose, onSubmit }) => {
                                 ),
                             }
                         }}
+                        {...register('newPassword')}
+                        error={!!errors.newPassword}
+                        helperText={errors.newPassword?.message && t(errors.newPassword.message, { ns: 'errors' })}
                     />
                     <TextField
                         type={showConfirm ? 'text' : 'password'}
                         label={t("profile.changePassword.label.confirm")}
-                        value={form.confirmPassword}
-                        onChange={handleChange("confirmPassword")}
                         fullWidth
                         slotProps={{
                             input: {
@@ -159,6 +162,9 @@ const ChangePasswordDialog = ({ open, onClose, onSubmit }) => {
                                 ),
                             }
                         }}
+                        {...register('confirmPassword')}
+                        error={!!errors.confirmPassword}
+                        helperText={errors.confirmPassword?.message && t(errors.confirmPassword.message, { ns: 'errors' })}
                     />
                 </Box>
             </DialogContent>
@@ -167,7 +173,7 @@ const ChangePasswordDialog = ({ open, onClose, onSubmit }) => {
                 <Button variant="outlined" color="inherit" onClick={onClose}>
                     {t("profile.changePassword.button.cancel")}
                 </Button>
-                <Button variant="contained" color="primary" onClick={handleSave}>
+                <Button variant="contained" color="primary" onClick={handleSubmit(handleFormSubmit)}>
                     {t("profile.changePassword.button.save")}
                 </Button>
             </DialogActions>

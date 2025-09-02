@@ -1073,7 +1073,7 @@ chalk@^4.0.0:
 
 "chat-app-zod-schema@https://github.com/nguyenhbtrung/chat-app-zod-schema.git#main":
   version "1.0.0"
-  resolved "https://github.com/nguyenhbtrung/chat-app-zod-schema.git#843e2db60db3420f78e98768e49cddbd47ea0dd8"
+  resolved "https://github.com/nguyenhbtrung/chat-app-zod-schema.git#50a2661e57c1ba263e630553819ac208e44b109f"
   dependencies:
     zod "^4.0.13"
 
