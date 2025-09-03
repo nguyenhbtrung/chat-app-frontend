@@ -35,7 +35,7 @@ const ContentSidebar = ({
                 width: isMobile ? '100%' : 400,
                 display: 'flex',
                 flexDirection: 'column',
-                borderRadius: 3,
+                borderRadius: isMobile ? 0 : 3,
                 overflow: 'hidden',
                 height: '100%',
             }}

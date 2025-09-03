@@ -16,7 +16,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 
-const NavigationSidebar = ({ setOpenProfile }) => {
+const NavigationSidebar = ({ isMobile, setOpenProfile }) => {
     const { t } = useTranslation();
 
     const navigate = useNavigate();
@@ -50,7 +50,7 @@ const NavigationSidebar = ({ setOpenProfile }) => {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                borderRadius: 3,
+                borderRadius: isMobile ? 0 : 3,
                 py: 2,
                 height: '100%',
             }}

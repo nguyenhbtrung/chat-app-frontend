@@ -209,8 +209,21 @@ const MainLayout = () => {
 
             {/* Navigation Sidebar */}
             {isMobile ? (
-                <Drawer open={mobileNavOpen} onClose={() => setMobileNavOpen(false)}>
-                    <NavigationSidebar setOpenProfile={setOpenProfile} />
+                <Drawer
+                    open={mobileNavOpen}
+                    onClose={() => setMobileNavOpen(false)}
+                    slotProps={{
+                        paper: {
+                            sx: {
+                                borderRadius: '0px 16px 16px 0px'
+                            }
+                        }
+                    }}
+                >
+                    <NavigationSidebar
+                        isMobile={isMobile}
+                        setOpenProfile={setOpenProfile}
+                    />
                 </Drawer>
             ) : (
                 <Box sx={{ mr: 2 }}><NavigationSidebar setOpenProfile={setOpenProfile} /></Box>
@@ -224,7 +237,8 @@ const MainLayout = () => {
                     slotProps={{
                         paper: {
                             sx: {
-                                width: '80%'
+                                width: '80%',
+                                borderRadius: '0px 16px 16px 0px'
                             }
                         }
                     }}
