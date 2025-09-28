@@ -1,0 +1,15 @@
+{
+    "title": "Notifications",
+    "subTitle": {
+        "new": "New",
+        "before": "Before"
+    },
+    "button": {
+        "deleteAll": "Delete all"
+    },
+    "content": {
+        "default": "You have a new notification",
+        "friendRequestAccepted": "Accepted your friend request",
+        "friendRequestRejected": "Rejected your friend request"
+    }
+}

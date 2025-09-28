@@ -4,6 +4,7 @@ import TestSocket from '../pages/TestSocket';
 import { TestChat } from '../pages/TestChat';
 import Chats from '../pages/Chats';
 import AddFriend from '../pages/AddFriend';
+import Notifications from '../pages/Notifications';
 
 export const routeConfig = {
     main: [
@@ -17,7 +18,7 @@ export const routeConfig = {
                 { path: 'received', element: <AddFriend tab={2} /> },
             ],
         },
-        { path: 'notifications', element: <div>notifications</div> },
+        { path: 'notifications', element: <Notifications /> },
     ],
     extra: [
         { path: '/tsk', element: <TestSocket /> },

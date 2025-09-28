@@ -43,6 +43,7 @@ import ContentSidebar from '../components/common/ContentSiderbar';
 import MainChatPanel from '../components/common/MainChatPanel';
 import { useLocation, useParams } from 'react-router-dom';
 import SetupDialog from '../components/common/dialog/SetupDialog';
+import ProfileSettingsDialog from '../components/common/dialog/ProfileSettingsDialog';
 
 const MainLayout = () => {
     const [selectedChat, setSelectedChat] = useState('Ls');
@@ -50,6 +51,7 @@ const MainLayout = () => {
     const [mobileNavOpen, setMobileNavOpen] = useState(false);
     const [mobileChatListOpen, setMobileChatListOpen] = useState(false);
     const [open, setOpen] = useState(true);
+    const [openProfile, setOpenProfile] = useState(false);
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -207,11 +209,24 @@ const MainLayout = () => {
 
             {/* Navigation Sidebar */}
             {isMobile ? (
-                <Drawer open={mobileNavOpen} onClose={() => setMobileNavOpen(false)}>
-                    <NavigationSidebar />
+                <Drawer
+                    open={mobileNavOpen}
+                    onClose={() => setMobileNavOpen(false)}
+                    slotProps={{
+                        paper: {
+                            sx: {
+                                borderRadius: '0px 16px 16px 0px'
+                            }
+                        }
+                    }}
+                >
+                    <NavigationSidebar
+                        isMobile={isMobile}
+                        setOpenProfile={setOpenProfile}
+                    />
                 </Drawer>
             ) : (
-                <Box sx={{ mr: 2 }}><NavigationSidebar /></Box>
+                <Box sx={{ mr: 2 }}><NavigationSidebar setOpenProfile={setOpenProfile} /></Box>
             )}
 
             {isMobile ? (
@@ -222,7 +237,8 @@ const MainLayout = () => {
                     slotProps={{
                         paper: {
                             sx: {
-                                width: '80%'
+                                width: '80%',
+                                borderRadius: '0px 16px 16px 0px'
                             }
                         }
                     }}
@@ -256,6 +272,7 @@ const MainLayout = () => {
                 messages={messages}
             />
             <SetupDialog open={open} onClose={() => setOpen(false)} />
+            <ProfileSettingsDialog open={openProfile} onClose={() => setOpenProfile(false)} isMobile={isMobile} />
         </Box>
     );
 };
